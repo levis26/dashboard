@@ -9,7 +9,24 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/folder/:id',
     component: () => import ('../views/FolderPage.vue')
+  },
+  {
+    path: '',
+    redirect: '/negocio'
+  },
+  {
+    path: '/negocio',
+    component: () => import ('../views/NegocioPage.vue')
+  },
+  {
+    path: '/tecnico',
+    component: () => import ('../views/TecnicoPage.vue')
+  },
+  {
+    path: '/kpis',
+    component: () => import ('../views/KpiPage.vue')
   }
+
 ]
 
 const router = createRouter({
