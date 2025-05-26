@@ -1,165 +1,173 @@
 <template>
-    <ion-page>
-      <ion-header :translucent="true">
+  <ion-page>
+    <ion-header :translucent="true">
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-menu-button color="primary"></ion-menu-button>
+        </ion-buttons>
+        <ion-title>🎯 KPIs</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content :fullscreen="true" class="ion-padding">
+      <ion-header collapse="condense">
         <ion-toolbar>
-          <ion-buttons slot="start">
-            <ion-menu-button color="primary"></ion-menu-button>
-          </ion-buttons>
-          <ion-title>🎯 KPIs</ion-title>
+          <ion-title size="large">🎯 KPIs</ion-title>
         </ion-toolbar>
       </ion-header>
-  
-  
-      <ion-content :fullscreen="true" class="ion-padding">
-        <ion-header collapse="condense">
-          <ion-toolbar>
-            <ion-title size="large">🎯 KPIs</ion-title>
-          </ion-toolbar>
-        </ion-header>
-  
-  
-        <h1 class="ion-padding">🚀 KPIs de Negocio</h1>
-        <ion-accordion-group expand="inset" :multiple="true">
-          <ion-accordion v-for="item in smartGoals" :key="item.id" :value="item.id.toString()">
-            <ion-item slot="header">
-              <ion-label>{{ item.id }}. {{ item.title }}</ion-label>
-            </ion-item>
-            <div class="ion-padding" slot="content">
-              <p>{{ item.description }}</p>
-              <ion-list :inset="true">
-                <ion-item v-for="(element, index) in item.smart" :key="index">
-                  <ion-label><b>{{ element.letter }}</b> → {{ element.content }}</ion-label>
-                </ion-item>
-              </ion-list>
-            </div>
-          </ion-accordion>
-        </ion-accordion-group>
-        <br>
-        <h1 class="ion-padding">📈 KPIs Técnicos</h1>
-        <ion-accordion-group expand="inset" :multiple="true">
-          <ion-accordion v-for="item in smartGoals" :key="item.id" :value="item.id.toString()">
-            <ion-item slot="header">
-              <ion-label>{{ item.id }}. {{ item.title }}</ion-label>
-            </ion-item>
-            <div class="ion-padding" slot="content">
-              <p>{{ item.description }}</p>
-              <ion-list :inset="true">
-                <ion-item v-for="(element, index) in item.smart" :key="index">
-                  <ion-label><b>{{ element.letter }}</b> → {{ element.content }}</ion-label>
-                </ion-item>
-              </ion-list>
-            </div>
-          </ion-accordion>
-        </ion-accordion-group>
-      </ion-content>
-    </ion-page>
-  </template>
-  
-  
-  <script setup lang="ts">
-  import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonAccordionGroup, IonAccordion, IonItem, IonLabel, IonList } from '@ionic/vue';
-  import { ref } from 'vue';
-  
-  
-  // Definición de la estructura de datos para un objetivo SMART
-  interface SmartElement {
-    letter: string;
-    content: string;
+
+      <!-- Sección de KPIs de Negocio -->
+      <section class="kpi-section">
+        <h2 class="section-title">
+          <ion-icon :icon="rocketOutline" class="section-icon"></ion-icon>
+          KPIs de Negocio
+        </h2>
+        <div class="kpi-grid">
+          <KpiCard 
+            v-for="kpi in businessKpis" 
+            :key="kpi.title"
+            :title="kpi.title"
+            :value="kpi.value"
+            :trend="kpi.trend"
+            :description="kpi.description"
+            :icon="kpi.icon"
+            :theme="kpi.theme"
+          />
+        </div>
+      </section>
+
+      <!-- Sección de KPIs Técnicos -->
+      <section class="kpi-section">
+        <h2 class="section-title">
+          <ion-icon :icon="speedometerOutline" class="section-icon"></ion-icon>
+          KPIs Técnicos
+        </h2>
+        <div class="kpi-grid">
+          <KpiCard 
+            v-for="kpi in techKpis" 
+            :key="kpi.title"
+            :title="kpi.title"
+            :value="kpi.value"
+            :trend="kpi.trend"
+            :description="kpi.description"
+            :icon="kpi.icon"
+            :theme="kpi.theme"
+            :reverse-trend="kpi.reverseTrend"
+          />
+        </div>
+      </section>
+    </ion-content>
+  </ion-page>
+</template>
+
+<script setup lang="ts">
+import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonIcon } from '@ionic/vue';
+import { rocketOutline, speedometerOutline, cashOutline, peopleOutline, cartOutline, timerOutline, serverOutline, bugOutline, statsChartOutline } from 'ionicons/icons';
+import { ref } from 'vue';
+import KpiCard from '@/components/KpiCard.vue';
+
+const businessKpis = ref([
+  {
+    title: 'Total de ventas',
+    value: '12.432 €',
+    trend: 5.2,
+    description: '+1.250 € vs mes anterior',
+    icon: cashOutline,
+    theme: 'purple'
+  },
+  {
+    title: 'Usuarios activos',
+    value: '1.124',
+    trend: 8.7,
+    description: 'Nuevos registros: 145',
+    icon: peopleOutline,
+    theme: 'blue'
+  },
+  {
+    title: 'Pedidos completados',
+    value: '987',
+    trend: 3.4,
+    description: 'Tasa de éxito: 98.5%',
+    icon: cartOutline,
+    theme: 'green'
+  },
+  {
+    title: 'Abandono carrito',
+    value: '23%',
+    trend: -2.1,
+    description: 'Mejorando mes a mes',
+    icon: statsChartOutline,
+    theme: 'orange'
   }
-  
-  
-  interface SmartGoal {
-    id: number;
-    title: string;
-    description: string;
-    smart: SmartElement[];
+]);
+
+const techKpis = ref([
+  {
+    title: 'Tiempo de carga',
+    value: '1.8s',
+    trend: -15,
+    description: 'Optimización reciente',
+    icon: timerOutline,
+    theme: 'red',
+    reverseTrend: true
+  },
+  {
+    title: 'Disponibilidad',
+    value: '99.95%',
+    trend: 0.1,
+    description: 'Tiempo operativo',
+    icon: serverOutline,
+    theme: 'teal'
+  },
+  {
+    title: 'Errores críticos',
+    value: '3',
+    trend: -50,
+    description: 'Reducción importante',
+    icon: bugOutline,
+    theme: 'yellow',
+    reverseTrend: true
+  },
+  {
+    title: 'Peticiones API',
+    value: '1.2M',
+    trend: 12,
+    description: 'Aumento de tráfico',
+    icon: statsChartOutline,
+    theme: 'indigo'
   }
-  
-  
-  // Array de objetivos SMART
-  const smartGoals = ref<SmartGoal[]>([
-    {
-      id: 1,
-      title: "Aumentar visitas",
-      description: "Aumentar las visitas de nuestro sitio web en un 50% (de 1000 a 1500) en los siguientes 30 días, al duplicar la distribución de contenido y con el fin de prepararnos para el lanzamiento de nuestro nuevo producto",
-      smart: [
-        { letter: "S", content: "Aumentar las visitas de nuestro sitio web en un 50%" },
-        { letter: "M", content: "50% (de 1,000 a 1,500)" },
-        { letter: "A", content: "duplicando la distribución de contenido" },
-        { letter: "R", content: "para prepararnos para el lanzamiento de nuestro nuevo producto." },
-        { letter: "T", content: "en los siguientes 30 días" }
-      ]
-    },
-    {
-      id: 2,
-      title: "Aumentar ventas",
-      description: "Aumentar las ventas en un 20% (de $200,000 a $240,000) en los próximos 12 meses, ofreciendo nuestros nuevos productos a los clientes existentes.",
-      smart: [
-        { letter: "S", content: "Aumentar las ventas en un 20%" },
-        { letter: "M", content: "20% (de $200,000 a $240,000)" },
-        { letter: "A", content: "ofreciendo nuestros nuevos productos a los clientes existentes" },
-        { letter: "R", content: "(retención de clientes y aumentar ventas)" },
-        { letter: "T", content: "próximos 12 meses" }
-      ]
-    },
-    {
-      id: 3,
-      title: "Ampliar equipo de marketing",
-      description: "Ampliar el equipo de marketing en un 10% (de 100 a 110 empleados) para finales del primer trimestre del próximo año, al contratar 3 empleados cada 3 meses para completar el equipo de creación de contenido.",
-      smart: [
-        { letter: "S", content: "Ampliar el equipo de marketing en un 10%" },
-        { letter: "M", content: "10% (de 100 a 110 empleados)" },
-        { letter: "A", content: "contratando a 3 empleados cada 3 meses" },
-        { letter: "R", content: "para completar el equipo de creación de contenido" },
-        { letter: "T", content: "para finales del primer trimestre del próximo año" }
-      ]
-    },
-    {
-      id: 4,
-      title: "Alianzas estratégicas",
-      description: "Crear 10 alianzas estratégicas en el próximo bienio por medio de la organización de foros, y así obtener más exposición de marca y mejorar la red de proveedores.",
-      smart: [
-        { letter: "S", content: "Crear alianzas estratégicas" },
-        { letter: "M", content: "10 alianzas estratégicas" },
-        { letter: "A", content: "por medio de la organización de foros" },
-        { letter: "R", content: "obtener más exposición de marca y mejorar la red de proveedores" },
-        { letter: "T", content: "en 2 años" }
-      ]
-    },
-    {
-      id: 5,
-      title: "Leads calificados",
-      description: "Aumentar la cantidad de leads calificados de 300 a 3000 en un período de 6 meses con la creación de 5 nuevas ofertas de contenido.",
-      smart: [
-        { letter: "S", content: "Aumentar la cantidad de leads calificados" },
-        { letter: "M", content: "de 300 a 3000" },
-        { letter: "A", content: "con la creación de 5 nuevas ofertas de contenido" },
-        { letter: "R", content: "(aumentar las posibilidades de venta)" },
-        { letter: "T", content: "en un período de 6 meses" }
-      ]
-    }
-  ]);
-  
-  
-  </script>
-  
-  
-  <style scoped>
-  
-  
-  ion-accordion.accordion-collapsing ion-item[slot='header'],
-    ion-accordion.accordion-collapsed ion-item[slot='header'] {
-      --background: var(--ion-color-light);
-      --color: var(--ion-color-light-contrast);
-    }
-  
-  
-    ion-accordion.accordion-expanding ion-item[slot='header'],
-    ion-accordion.accordion-expanded ion-item[slot='header'] {
-      --background: rgba(var(--ion-color-primary-rgb), 0.14);
-      color: var(--ion-color-primary);
-    }
-  
-  
-  </style>
-  
+]);
+</script>
+
+<style scoped>
+.kpi-section {
+  margin-bottom: 2.5rem;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  color: var(--ion-color-primary);
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--ion-color-light-shade);
+}
+
+.section-icon {
+  margin-right: 0.75rem;
+  font-size: 1.8rem;
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .kpi-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
