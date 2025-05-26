@@ -18,10 +18,10 @@
 
       <!-- Grid principal del Dashboard -->
       <ion-grid class="dashboard-grid">
-        <!-- Fila 1: 4 Columnas -->
-        <ion-row class="ion-row-1">
+        <!-- Fila 1: 2 Columnas -->
+        <ion-row class="dashboard-row">
           <ion-col size="12" size-lg="6">
-            <div class="box">
+            <div class="chart-box">
               <h3>Productos más vendidos</h3>
               <ApexMixedChart 
                 :series="topProductsSeries" 
@@ -32,7 +32,7 @@
             </div>
           </ion-col>
           <ion-col size="12" size-lg="6">
-            <div class="box">
+            <div class="chart-box">
               <h3>Clientes más frecuentes</h3>
               <ApexMixedChart 
                 :series="topCustomersSeries" 
@@ -44,9 +44,9 @@
         </ion-row>
 
         <!-- Fila 2: 2 Columnas -->
-        <ion-row class="ion-row-2">
+        <ion-row class="dashboard-row">
           <ion-col size="12" size-lg="8">
-            <div class="box">
+            <div class="chart-box">
               <h3>Ventas mensuales</h3>
               <ApexMixedChart 
                 :series="monthlySalesSeries" 
@@ -57,27 +57,38 @@
             </div>
           </ion-col>
           <ion-col size="12" size-lg="4">
-            <div class="box">
+            <div class="chart-box">
               <h3>Categorías más vendidas</h3>
               <ApexMixedChart 
                 :series="categoriesSeries" 
                 type="pie"
-                :colors="['#e91e63', '#9c27b0', '#3f51b5', '#2196f3', '#009688']"
+                :colors="['#e91e63', '#9c27b0', '#3f51b5', '#2196f3', '#009688', '#ff5722']"
               />
             </div>
           </ion-col>
         </ion-row>
 
-        <!-- Fila 3: 1 Columna -->
-        <ion-row class="ion-row-3">
-          <ion-col size="12">
-            <div class="box">
+        <!-- Fila 3: 2 Columnas -->
+        <ion-row class="dashboard-row">
+          <ion-col size="12" size-lg="6">
+            <div class="chart-box">
               <h3>Productos en oferta vs. sin oferta</h3>
               <ApexMixedChart 
                 :series="discountComparisonSeries" 
                 type="bar"
                 :colors="['#ff5722', '#607d8b']"
                 yTitle="ventas"
+              />
+            </div>
+          </ion-col>
+          <ion-col size="12" size-lg="6">
+            <div class="chart-box">
+              <h3>Expansión Kinisi en Europa</h3>
+              <EchartsMap 
+                :data="expansionData"
+                :mapName="'europe'"
+                title="Expansión Kinisi"
+                subtitle="Presencia en países europeos"
               />
             </div>
           </ion-col>
@@ -91,8 +102,9 @@
 import { ref } from 'vue';
 import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonGrid, IonRow, IonCol } from '@ionic/vue';
 import ApexMixedChart from '@/components/ApexMixedChart.vue';
+import EchartsMap from '@/components/EchartsMap.vue';
 
-// Datos mock para demostración - en producción vendrían de una API
+// Datos para los gráficos
 const topProductsSeries = ref([{
   name: 'Ventas',
   data: [120, 98, 85, 72, 65].map((v, i) => ({
@@ -123,11 +135,12 @@ const monthlySalesSeries = ref([{
 }]);
 
 const categoriesSeries = ref([
-  { name: 'Camisetas', data: 35 },
-  { name: 'Leggings', data: 25 },
-  { name: 'Tops', data: 20 },
-  { name: 'Sudaderas', data: 15 },
-  { name: 'Accesorios', data: 5 }
+  { name: 'Hombres', data: 35 },
+  { name: 'Mujeres', data: 25 },
+  { name: 'Camisetas', data: 20 },
+  { name: 'Pantalones', data: 15 },
+  { name: 'Vestidos', data: 10 },
+  { name: 'Sombreros', data: 5 }
 ]);
 
 const discountComparisonSeries = ref([{
@@ -137,41 +150,65 @@ const discountComparisonSeries = ref([{
   name: 'Sin oferta',
   data: [35, 41, 20, 19, 44]
 }]);
+
+const expansionData = ref([
+  { name: "Spain", value: 25000 },
+  { name: "France", value: 18000 },
+  { name: "Germany", value: 22000 },
+  { name: "Italy", value: 15000 },
+  { name: "Portugal", value: 12000 },
+  { name: "United Kingdom", value: 20000 },
+  { name: "Netherlands", value: 10000 }
+]);
 </script>
 
 <style scoped>
-.box {
-  background: var(--ion-color-light);
-  border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 16px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.box h3 {
-  margin-top: 0;
-  color: var(--ion-color-primary);
-}
-
 .dashboard-grid {
   margin-top: 16px;
   height: 100%;
 }
 
-.ion-row-1,
-.ion-row-2,
-.ion-row-3 {
-  margin-bottom: 16px;
-  height: 100%;
+.dashboard-row {
+  margin-bottom: 20px;
+  height: auto;
 }
 
-@media (min-width: 992px) {  
-  ion-grid { height: 100%; }
-  .ion-row-1 { height: 30%; max-height: 30%; }
-  .ion-row-2 { height: 40%; max-height: 40%; }
-  .ion-row-3 { height: 30%; max-height: 30%; }
+.chart-box {
+  background: var(--ion-color-light);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 300px;
+}
+
+.chart-box h3 {
+  margin: 0 0 1rem 0;
+  color: var(--ion-color-primary);
+  font-size: 1.1rem;
+}
+
+/* Ajustes responsivos */
+@media (min-width: 992px) {
+  .dashboard-row {
+    height: 400px;
+  }
+  
+  .chart-box {
+    min-height: 350px;
+  }
+}
+
+@media (max-width: 991px) {
+  .dashboard-row {
+    height: auto;
+  }
+  
+  .chart-box {
+    margin-bottom: 20px;
+    min-height: 300px;
+  }
 }
 </style>

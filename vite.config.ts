@@ -9,12 +9,26 @@ import { defineConfig } from 'vite'
 export default defineConfig({
   plugins: [
     vue(),
-    legacy()
+    legacy(),
+    {
+      name: 'json-handler',
+      transform(code, id) {
+        if (id.endsWith('.json')) {
+          try {
+            const json = JSON.parse(code);
+            return `export default ${JSON.stringify(json)};`;
+          } catch (e) {
+            return null;
+          }
+        }
+        return null;
+      }
+    }
   ],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
-    },
+      '@': path.resolve(__dirname, './src')
+    }
   },
   test: {
     globals: true,
