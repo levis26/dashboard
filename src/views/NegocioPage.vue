@@ -296,23 +296,40 @@ const products = [
   'Accesorios'
 ];
 
-const discountComparisonSeries = ref([{
-  name: 'Ventas',
-  data: [
-    { x: 'Leotardos Premium', y: 'En oferta', value: 85 },
-    { x: 'Leotardos Premium', y: 'Sin oferta', value: 35 },
-    { x: 'Mallas Ballet', y: 'En oferta', value: 92 },
-    { x: 'Mallas Ballet', y: 'Sin oferta', value: 28 },
-    { x: 'Zapatillas Jazz', y: 'En oferta', value: 78 },
-    { x: 'Zapatillas Jazz', y: 'Sin oferta', value: 22 },
-    { x: 'Tops Danza', y: 'En oferta', value: 65 },
-    { x: 'Tops Danza', y: 'Sin oferta', value: 25 },
-    { x: 'Faldas Ballet', y: 'En oferta', value: 88 },
-    { x: 'Faldas Ballet', y: 'Sin oferta', value: 32 },
-    { x: 'Accesorios', y: 'En oferta', value: 72 },
-    { x: 'Accesorios', y: 'Sin oferta', value: 18 }
-  ]
-}]);
+const discountComparisonSeries = ref([
+  {
+    name: 'Ventas',
+    data: [
+      [0, 0, 85],
+      [0, 1, 35],
+      [1, 0, 92],
+      [1, 1, 28],
+      [2, 0, 78],
+      [2, 1, 22],
+      [3, 0, 65],
+      [3, 1, 25],
+      [4, 0, 88],
+      [4, 1, 32],
+      [5, 0, 72],
+      [5, 1, 18]
+    ]
+  }
+]);
+
+// Mapping for x and y axes
+const productMapping = {
+  0: 'Leotardos Premium',
+  1: 'Mallas Ballet',
+  2: 'Zapatillas Jazz',
+  3: 'Tops Danza',
+  4: 'Faldas Ballet',
+  5: 'Accesorios'
+};
+
+const statusMapping = {
+  0: 'En oferta',
+  1: 'Sin oferta'
+};
 
 const expansionData = ref([
   { name: 'Spain', value: 100, status: 'active' },

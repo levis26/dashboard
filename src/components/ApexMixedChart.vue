@@ -137,18 +137,34 @@ const computedChartOptions = computed(() => {
     tooltip: {
       shared: true,
       intersect: false,
-      y: {
-        formatter: function (value: any, { seriesIndex, dataPointIndex, w }: any) {
-          if (w.config.type === 'heatmap') {
-            const x = w.config.xaxis.categories[dataPointIndex];
-            const y = w.config.yaxis.categories[seriesIndex];
-            return `${y}<br>${x}: ${value}`;
-          }
-          if (typeof value !== 'undefined') {
-            return value.toFixed(0) + (props.yTitle ? ' ' + props.yTitle : '');
-          }
-          return value;
+      formatter: function (val: any, opts: any) {
+        if (opts?.config?.type === 'heatmap') {
+          // Get the actual values using the mappings
+          const x = opts.config.xaxis.categories[opts.dataPointIndex];
+          const y = opts.config.yaxis.categories[opts.seriesIndex];
+          return `
+            <div style="color: ${opts.color}">
+              <strong>${y}</strong><br>
+              <span style="font-size: 14px">${x}: ${val}</span>
+            </div>
+          `;
         }
+        return val;
+      }
+    },
+    // Add custom options for heatmap
+    plotOptions: {
+      heatmap: {
+        colorScale: {
+          ranges: [
+            { from: 0, to: 30, color: '#607d8b' },
+            { from: 31, to: 70, color: '#ff5722' },
+            { from: 71, to: 100, color: '#e91e63' }
+          ]
+        },
+        distributed: true,
+        enableShades: true,
+        shadeIntensity: 0.5
       }
     },
     grid: {
