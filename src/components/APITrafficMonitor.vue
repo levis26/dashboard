@@ -28,10 +28,11 @@
   import { IonChip } from '@ionic/vue';
   
   const props = defineProps<{
-    series: {
-      endpoints: string[];
-      data: number[];
-    };
+    series: Array<{
+      name: string;
+      data: Array<{ x: string; y: number }>;
+      color: string;
+    }>;
     colors?: string[];
   }>();
   
@@ -39,50 +40,88 @@
   const timePeriods = ['24h', '7d', '30d'];
   
   const formattedSeries = computed(() => 
-    props.series.endpoints.map((endpoint, index) => ({
-      name: endpoint,
-      data: props.series.data.map(value => value * (index + 1))
+    props.series.map(series => ({
+      name: series.name,
+      data: series.data.map(point => point.y),
+      color: series.color
     }))
   );
   
-  const chartOptions = computed(() => ({
-    chart: {
-      height: 350,
-      type: 'line',
-      zoom: {
-        enabled: false
-      }
+const chartOptions = computed(() => ({
+  chart: {
+    height: 350,
+    type: 'line',
+    toolbar: {
+      show: true
     },
-    xaxis: {
-      categories: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
-      labels: {
-        style: {
-          colors: '#6c757d'
-        }
-      }
-    },
-    yaxis: {
-      title: {
-        text: 'Peticiones por minuto',
-        style: {
-          color: '#6c757d'
-        }
-      }
-    },
-    stroke: {
-      width: 3,
-      curve: 'smooth'
-    },
-    markers: {
-      size: 5,
-      hover: {
-        size: 7
-      }
-    },
-    grid: {
-      borderColor: '#e9ecef'
+    zoom: {
+      enabled: true
     }
-  }));
+  },
+  dataLabels: {
+    enabled: true,
+    style: {
+      fontSize: '12px'
+    }
+  },
+  stroke: {
+    curve: 'smooth',
+    width: 2
+  },
+  markers: {
+    size: 4,
+    hover: {
+      size: 6
+    }
+  },
+  xaxis: {
+    type: 'category',
+    categories: props.series[0].data.map(point => point.x),
+    labels: {
+      rotate: -45,
+      rotateAlways: true,
+      style: {
+        fontSize: '12px'
+      }
+    },
+    title: {
+      text: 'Hora',
+      style: {
+        fontSize: '14px'
+      }
+    }
+  },
+  yaxis: {
+    title: {
+      text: 'Solicitudes',
+      style: {
+        fontSize: '14px'
+      }
+    },
+    labels: {
+      formatter: function (val: number) {
+        return val.toLocaleString();
+      }
+    }
+  },
+  tooltip: {
+    enabled: true,
+    y: {
+      formatter: function (val: number) {
+        return val.toLocaleString() + ' solicitudes';
+      }
+    }
+  },
+  legend: {
+    show: true,
+    position: 'top',
+    horizontalAlign: 'center',
+    fontSize: '12px'
+  },
+  grid: {
+    borderColor: '#e9ecef'
+  }
+}));
   </script>
   
   <style scoped>

@@ -50,10 +50,28 @@
       easing: 'easeinout',
       speed: 800
     },
+    plotOptions: {
+      bar: {
+        horizontal: false,
+        columnWidth: '40%',
+        borderRadius: 4,
+        distributed: true
+      }
+    },
+    dataLabels: {
+      enabled: true,
+      formatter: function (val: number) {
+        return val.toLocaleString();
+      },
+      style: {
+        fontSize: '12px',
+        fontWeight: 500
+      }
+    },
     markers: {
-      size: 4,
+      size: 6,
       hover: {
-        size: 6
+        size: 8
       }
     },
     tooltip: {
@@ -61,7 +79,7 @@
       followCursor: true,
       y: {
         formatter: function (val: number) {
-          return val + (props.yTitle ? ' ' + props.yTitle : '');
+          return val.toLocaleString() + (props.yTitle ? ' ' + props.yTitle : '');
         }
       }
     },
@@ -69,16 +87,36 @@
       type: 'category',
       labels: {
         rotate: -45,
-        rotateAlways: true
+        rotateAlways: true,
+        style: {
+          fontSize: '12px'
+        }
       },
       title: {
-        text: props.yTitle
+        text: props.yTitle,
+        style: {
+          fontSize: '14px'
+        }
       }
     },
     yaxis: {
       title: {
-        text: props.yTitle
+        text: props.yTitle,
+        style: {
+          fontSize: '14px'
+        }
+      },
+      labels: {
+        formatter: function (val: number) {
+          return val.toLocaleString();
+        }
       }
+    },
+    legend: {
+      show: true,
+      position: 'top',
+      horizontalAlign: 'center',
+      fontSize: '12px'
     }
   }));
 

@@ -3,15 +3,14 @@
       <div class="chart-header">
         <h3>Distribución de Errores</h3>
         <ion-badge color="medium" class="info-badge">
-          <ion-icon :icon="alertCircleOutline" />
-          <span>Últimas 24 horas</span>
+          <ion-icon :icon="warningOutline" />
+          <span>Sistema</span>
         </ion-badge>
       </div>
       
       <ApexMixedChart 
         :series="chartSeries"
         type="bar"
-        :colors="colors"
         :chartOptions="chartOptions"
       />
     </div>
@@ -19,62 +18,85 @@
   
   <script setup lang="ts">
   import { computed } from 'vue';
-  import { alertCircleOutline } from 'ionicons/icons';
+  import { warningOutline } from 'ionicons/icons';
+  
+  interface ErrorData {
+    type: string;
+    count: number;
+    severity: 'low' | 'medium' | 'high' | 'critical';
+  }
   
   const props = defineProps<{
-    errorData: Array<{
-      type: string;
-      count: number;
-      severity: 'low' | 'medium' | 'high' | 'critical';
-    }>;
-    colors?: string[];
+    errorData: ErrorData[];
   }>();
   
   const chartSeries = computed(() => [{
     name: 'Errores',
-    data: props.errorData.map(error => error.count)
+    data: props.errorData.map(item => item.count)
   }]);
   
   const chartOptions = computed(() => ({
     chart: {
+      type: 'bar',
+      height: 350,
       toolbar: {
-        show: true,
-        tools: {
-          download: true,
-          selection: false,
-          zoom: false,
-          zoomin: false,
-          zoomout: false,
-          pan: false
-        }
-      }
-    },
-    xaxis: {
-      categories: props.errorData.map(error => error.type),
-      labels: {
-        style: {
-          colors: '#6c757d'
-        }
-      }
-    },
-    yaxis: {
-      title: {
-        text: 'Cantidad de errores',
-        style: {
-          color: '#6c757d'
-        }
+        show: false
       }
     },
     plotOptions: {
       bar: {
+        borderRadius: 4,
+        horizontal: true,
         distributed: true,
-        borderRadius: 8,
-        columnWidth: '70%'
+        dataLabels: {
+          position: 'bottom'
+        }
       }
+    },
+    colors: props.errorData.map(item => {
+      switch (item.severity) {
+        case 'critical': return '#dc3545';
+        case 'high': return '#fd7e14';
+        case 'medium': return '#ffc107';
+        case 'low': return '#20c997';
+        default: return '#6c757d';
+      }
+    }),
+    dataLabels: {
+      enabled: true,
+      formatter: function (val: number) {
+        return val.toString();
+      },
+      style: {
+        fontSize: '12px',
+        colors: ['#fff']
+      }
+    },
+    xaxis: {
+      categories: props.errorData.map(item => item.type),
+      labels: {
+        style: {
+          colors: '#6c757d',
+          fontSize: '12px'
+        }
+      }
+    },
+    yaxis: {
+      labels: {
+        style: {
+          colors: '#6c757d',
+          fontSize: '12px'
+        }
+      }
+    },
+    legend: {
+      show: false
     },
     tooltip: {
       y: {
-        formatter: (value: number) => `${value} ocurrencias`
+        formatter: function (val: number) {
+          return val + ' errores';
+        }
       }
     }
   }));

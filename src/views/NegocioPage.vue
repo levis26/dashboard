@@ -26,7 +26,7 @@
               <ApexMixedChart 
                 :series="topProductsSeries" 
                 type="bar"
-                :chartOptions="{ horizontal: true }"
+                :chartOptions="chartOptions"
                 :colors="['#4caf50']"
               />
             </div>
@@ -64,37 +64,7 @@
                 :series="categoriesSeries" 
                 type="donut"
                 :colors="['#e91e63', '#9c27b0', '#3f51b5', '#2196f3', '#009688', '#ff5722']"
-                :chartOptions="{
-                  labels: categoriesLabels,
-                  dataLabels: {
-                    enabled: true,
-                    style: {
-                      fontSize: '12px'
-                    },
-                    formatter: function (val) {
-                      return val + '%';
-                    }
-                  },
-                  legend: {
-                    position: 'bottom',
-                    fontSize: '12px',
-                    horizontalAlign: 'center'
-                  },
-                  chart: {
-                    height: 300
-                  },
-                  responsive: [{
-                    breakpoint: 480,
-                    options: {
-                      chart: {
-                        height: 250
-                      },
-                      legend: {
-                        fontSize: '10px'
-                      }
-                    }
-                  }]
-                }"
+                :chartOptions="chartOptions"
               />
             </div>
           </ion-col>
@@ -109,46 +79,7 @@
                 :series="discountComparisonSeries"
                 type="heatmap"
                 :colors="['#607d8b', '#ff5722']"
-                :chartOptions="{
-                  xaxis: {
-                    type: 'category',
-                    categories: products,
-                    title: {
-                      text: 'Prendas'
-                    },
-                    labels: {
-                      style: {
-                        fontSize: '12px'
-                      }
-                    }
-                  },
-                  yaxis: {
-                    type: 'category',
-                    categories: ['En oferta', 'Sin oferta'],
-                    title: {
-                      text: 'Estado'
-                    }
-                  },
-                  plotOptions: {
-                    heatmap: {
-                      colorScale: {
-                        ranges: [
-                          { from: 0, to: 20, color: '#607d8b' },
-                          { from: 21, to: 60, color: '#ff5722' },
-                          { from: 61, to: 100, color: '#e91e63' }
-                        ]
-                      }
-                    }
-                  },
-                  tooltip: {
-                    y: {
-                      formatter: function (val, opts) {
-                        return `<strong>${val} ventas</strong><br>
-                               <span style='color:${opts.color}'>${opts.seriesName}</span>`;
-                      }
-                    }
-                  }
-                }"
+                :chartOptions="chartOptions"
               />
             </div>
           </ion-col>
@@ -175,123 +106,293 @@ import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, Io
 import ApexMixedChart from '@/components/ApexMixedChart.vue';
 import EchartsMap from '@/components/EchartsMap.vue';
 
+// Interfaces
+interface ChartDataPoint {
+  x: string;
+  y: number;
+}
+
+interface ExpansionData {
+  country: string;
+  value: number;
+  status: 'active' | 'planned' | 'inactive';
+}
+
 // Datos para los gráficos
 const topProductsSeries = ref([{
   name: 'Ventas',
-  data: [120, 98, 85, 72, 65].map((v, i) => ({
-    x: `Producto ${i+1}`,
-    y: v
-  }))
+  data: [
+    { x: 'Leotardos Premium', y: 245 },
+    { x: 'Mallas Ballet', y: 198 },
+    { x: 'Zapatillas Jazz', y: 185 },
+    { x: 'Tops Danza', y: 172 },
+    { x: 'Faldas Ballet', y: 165 }
+  ]
 }]);
 
 const topCustomersSeries = ref([{
   name: 'Compras',
-  data: [15, 12, 10, 8, 7].map((v, i) => ({
-    x: `Cliente ${i+1}`,
-    y: v
-  }))
+  data: [
+    { x: 'María García', y: 28 },
+    { x: 'Ana Martínez', y: 25 },
+    { x: 'Laura Sánchez', y: 22 },
+    { x: 'Carmen López', y: 20 },
+    { x: 'Isabel Ruiz', y: 18 }
+  ]
 }]);
 
 const monthlySalesSeries = ref([{
   name: 'Ventas',
   data: [
-    { x: '2023-01-01', y: 2300 },
-    { x: '2023-02-01', y: 3100 },
-    { x: '2023-03-01', y: 2750 },
-    { x: '2023-04-01', y: 2900 },
-    { x: '2023-05-01', y: 4200 },
-    { x: '2023-06-01', y: 3800 },
-    { x: '2023-07-01', y: 4100 }
+    { x: '2023-01-01', y: 12500 },
+    { x: '2023-02-01', y: 15800 },
+    { x: '2023-03-01', y: 14200 },
+    { x: '2023-04-01', y: 16800 },
+    { x: '2023-05-01', y: 19200 },
+    { x: '2023-06-01', y: 17500 }
   ]
 }]);
 
-const categoriesSeries = ref([35, 25, 20, 15, 10, 5]);
-const categoriesLabels = ref(['Hombres', 'Mujeres', 'Camisetas', 'Pantalones', 'Vestidos', 'Sombreros']);
+const categoriesLabels = [
+  'Ballet Clásico',
+  'Jazz Moderno',
+  'Contemporáneo',
+  'Hip Hop',
+  'Flamenco',
+  'Otros'
+];
 
-const products = ref([
-  'Camiseta Basic',
-  'Pantalón Jogger',
-  'Chaqueta Denim',
-  'Vestido Midi',
-  'Zapatillas Urban'
-]);
+const categoriesSeries = ref([{
+  name: 'Ventas por categoría',
+  data: [35, 28, 20, 12, 4, 1]
+}]);
 
-const discountComparisonData = ref([
-  { x: 'En oferta', y: 'Camiseta Basic', z: 65 },
-  { x: 'En oferta', y: 'Pantalón Jogger', z: 59 },
-  { x: 'En oferta', y: 'Chaqueta Denim', z: 80 },
-  { x: 'En oferta', y: 'Vestido Midi', z: 81 },
-  { x: 'En oferta', y: 'Zapatillas Urban', z: 56 },
-  { x: 'Sin oferta', y: 'Camiseta Basic', z: 35 },
-  { x: 'Sin oferta', y: 'Pantalón Jogger', z: 41 },
-  { x: 'Sin oferta', y: 'Chaqueta Denim', z: 20 },
-  { x: 'Sin oferta', y: 'Vestido Midi', z: 19 },
-  { x: 'Sin oferta', y: 'Zapatillas Urban', z: 44 }
-]);
+const products = [
+  'Leotardos Premium',
+  'Mallas Ballet',
+  'Zapatillas Jazz',
+  'Tops Danza',
+  'Faldas Ballet',
+  'Accesorios'
+];
 
 const discountComparisonSeries = ref([{
   name: 'Ventas',
   data: [
-    { x: 'Camiseta Basic', y: 65, z: 1 },
-    { x: 'Pantalón Jogger', y: 59, z: 2 },
-    { x: 'Chaqueta Denim', y: 80, z: 3 },
-    { x: 'Vestido Midi', y: 81, z: 4 },
-    { x: 'Zapatillas Urban', y: 56, z: 5 },
-    { x: 'Camiseta Basic', y: 35, z: 1 },
-    { x: 'Pantalón Jogger', y: 41, z: 2 },
-    { x: 'Chaqueta Denim', y: 20, z: 3 },
-    { x: 'Vestido Midi', y: 19, z: 4 },
-    { x: 'Zapatillas Urban', y: 44, z: 5 }
+    { x: 'Leotardos Premium', y: 'En oferta', value: 85 },
+    { x: 'Leotardos Premium', y: 'Sin oferta', value: 45 },
+    { x: 'Mallas Ballet', y: 'En oferta', value: 95 },
+    { x: 'Mallas Ballet', y: 'Sin oferta', value: 35 },
+    { x: 'Zapatillas Jazz', y: 'En oferta', value: 105 },
+    { x: 'Zapatillas Jazz', y: 'Sin oferta', value: 25 },
+    { x: 'Tops Danza', y: 'En oferta', value: 75 },
+    { x: 'Tops Danza', y: 'Sin oferta', value: 40 },
+    { x: 'Faldas Ballet', y: 'En oferta', value: 90 },
+    { x: 'Faldas Ballet', y: 'Sin oferta', value: 30 },
+    { x: 'Accesorios', y: 'En oferta', value: 65 },
+    { x: 'Accesorios', y: 'Sin oferta', value: 35 }
   ]
 }]);
 
 const expansionData = ref([
-  { name: "Spain", value: 25000 },
-  { name: "France", value: 18000 },
-  { name: "Germany", value: 22000 },
-  { name: "Italy", value: 15000 },
-  { name: "Portugal", value: 12000 },
-  { name: "United Kingdom", value: 20000 },
-  { name: "Netherlands", value: 10000 }
+  { name: 'España', value: 100 },
+  { name: 'Francia', value: 85 },
+  { name: 'Italia', value: 70 },
+  { name: 'Alemania', value: 55 },
+  { name: 'Reino Unido', value: 40 },
+  { name: 'Portugal', value: 35 }
 ]);
+
+// Configuración mejorada para los gráficos
+const chartOptions = {
+  bar: {
+    horizontal: true,
+    dataLabels: {
+      position: 'bottom',
+      style: {
+        fontSize: '12px',
+        colors: ['#333']
+      }
+    },
+    plotOptions: {
+      bar: {
+        borderRadius: 4,
+        horizontal: true,
+        distributed: true,
+        barHeight: '70%',
+        dataLabels: {
+          position: 'bottom'
+        }
+      }
+    }
+  },
+  area: {
+    fill: {
+      type: 'gradient',
+      gradient: {
+        shadeIntensity: 1,
+        opacityFrom: 0.7,
+        opacityTo: 0.2,
+        stops: [0, 90, 100]
+      }
+    },
+    stroke: {
+      curve: 'smooth',
+      width: 3
+    }
+  },
+  line: {
+    stroke: {
+      curve: 'smooth',
+      width: 3
+    },
+    markers: {
+      size: 5,
+      hover: {
+        size: 7
+      }
+    }
+  },
+  donut: {
+    labels: categoriesLabels,
+    dataLabels: {
+      enabled: true,
+      style: {
+        fontSize: '12px'
+      },
+      formatter: function (val: number) {
+        return val + '%';
+      }
+    },
+    legend: {
+      position: 'bottom',
+      fontSize: '12px',
+      horizontalAlign: 'center'
+    },
+    chart: {
+      height: 300
+    },
+    responsive: [{
+      breakpoint: 480,
+      options: {
+        chart: {
+          height: 250
+        },
+        legend: {
+          fontSize: '10px'
+        }
+      }
+    }]
+  },
+  heatmap: {
+    xaxis: {
+      type: 'category',
+      categories: products,
+      title: {
+        text: 'Prendas'
+      },
+      labels: {
+        style: {
+          fontSize: '12px'
+        }
+      }
+    },
+    yaxis: {
+      type: 'category',
+      categories: ['En oferta', 'Sin oferta'],
+      title: {
+        text: 'Estado'
+      }
+    },
+    plotOptions: {
+      heatmap: {
+        colorScale: {
+          ranges: [
+            { from: 0, to: 20, color: '#607d8b' },
+            { from: 21, to: 60, color: '#ff5722' },
+            { from: 61, to: 100, color: '#e91e63' }
+          ]
+        }
+      }
+    },
+    tooltip: {
+      y: {
+        formatter: function (val: string, opts: any) {
+          return `<strong>${val} ventas</strong><br>
+                 <span style='color:${opts.color}'>${opts.seriesName}</span>`;
+        }
+      }
+    }
+  }
+};
+
+// Función para formatear moneda
+const formatCurrency = (value: number) => {
+  return new Intl.NumberFormat('es-ES', {
+    style: 'currency',
+    currency: 'EUR'
+  }).format(value);
+};
 </script>
 
 <style scoped>
 .dashboard-grid {
   margin-top: 16px;
   height: 100%;
+  --ion-grid-padding: 16px;
+  --ion-grid-column-padding: 16px;
 }
 
 .dashboard-row {
-  margin-bottom: 20px;
+  margin-bottom: 24px;
   height: auto;
 }
 
 .chart-box {
-  background: var(--ion-color-light);
-  border-radius: 12px;
-  padding: 16px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   height: 100%;
   display: flex;
   flex-direction: column;
   min-height: 300px;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.chart-box:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
 }
 
 .chart-box h3 {
-  margin: 0 0 1rem 0;
+  margin: 0 0 1.5rem 0;
   color: var(--ion-color-primary);
-  font-size: 1.1rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chart-box h3::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 20px;
+  background: var(--ion-color-primary);
+  border-radius: 2px;
 }
 
 /* Ajustes responsivos */
 @media (min-width: 992px) {
   .dashboard-row {
-    height: 400px;
+    height: 450px;
   }
   
   .chart-box {
-    min-height: 350px;
+    min-height: 400px;
   }
 }
 
@@ -301,8 +402,73 @@ const expansionData = ref([
   }
   
   .chart-box {
-    margin-bottom: 20px;
-    min-height: 300px;
+    margin-bottom: 24px;
+    min-height: 350px;
   }
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.chart-box {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* Estilos para el contenido del gráfico */
+:deep(.apexcharts-canvas) {
+  background: transparent !important;
+}
+
+:deep(.apexcharts-tooltip) {
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+  border-radius: 8px !important;
+}
+
+:deep(.apexcharts-legend) {
+  padding: 8px !important;
+  background: rgba(255, 255, 255, 0.8) !important;
+  backdrop-filter: blur(4px);
+  border-radius: 8px !important;
+}
+
+:deep(.apexcharts-grid line) {
+  stroke: rgba(0, 0, 0, 0.05) !important;
+}
+
+:deep(.apexcharts-xaxis line),
+:deep(.apexcharts-yaxis line) {
+  stroke: rgba(0, 0, 0, 0.1) !important;
+}
+
+:deep(.apexcharts-text) {
+  font-family: inherit !important;
+}
+
+/* Estilos para el mapa */
+:deep(.echarts-map) {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+:deep(.echarts-map-tooltip) {
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+  border-radius: 8px !important;
+  padding: 12px !important;
 }
 </style>
