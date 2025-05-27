@@ -19,7 +19,7 @@
   const props = defineProps<{
     title?: string;
     subtitle?: string;
-    data: { name: string; value: number }[];
+    data: { name: string; value: number; status?: 'active' | 'planned' | 'inactive' }[];
     mapName?: string;
   }>();
   
@@ -108,7 +108,27 @@
             borderColor: 'rgba(255, 255, 255, 0.5)',
             borderWidth: 0.5
           },
-          data: props.data,
+          data: props.data.map(item => ({
+            name: item.name,
+            value: item.value,
+            status: item.status
+          })),
+          visualMap: {
+            show: true,
+            min: Math.min(...props.data.map(item => item.value)),
+            max: Math.max(...props.data.map(item => item.value)),
+            left: "left",
+            top: "bottom",
+            text: ["Más", "Menos"],
+            textStyle: { color: "#B9B8CE" },
+            calculable: true,
+            inRange: { 
+              color: ["#e0f3f8", "#74add1", "#4575b4"] 
+            },
+            outOfRange: {
+              color: ['rgba(200, 200, 200, 0.2)']
+            }
+          },
         },
       ],
     };

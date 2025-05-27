@@ -138,11 +138,16 @@ const computedChartOptions = computed(() => {
       shared: true,
       intersect: false,
       y: {
-        formatter: function (y: number) {
-          if (typeof y !== 'undefined') {
-            return y.toFixed(0) + (props.yTitle ? ' ' + props.yTitle : '');
+        formatter: function (value: any, { seriesIndex, dataPointIndex, w }: any) {
+          if (w.config.type === 'heatmap') {
+            const x = w.config.xaxis.categories[dataPointIndex];
+            const y = w.config.yaxis.categories[seriesIndex];
+            return `${y}<br>${x}: ${value}`;
           }
-          return y;
+          if (typeof value !== 'undefined') {
+            return value.toFixed(0) + (props.yTitle ? ' ' + props.yTitle : '');
+          }
+          return value;
         }
       }
     },

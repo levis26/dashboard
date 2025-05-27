@@ -315,12 +315,24 @@ const discountComparisonSeries = ref([{
 }]);
 
 const expansionData = ref([
-  { name: 'España', value: 100 },
-  { name: 'Francia', value: 85 },
-  { name: 'Italia', value: 70 },
-  { name: 'Alemania', value: 55 },
-  { name: 'Reino Unido', value: 40 },
-  { name: 'Portugal', value: 35 }
+  { name: 'Spain', value: 100, status: 'active' },
+  { name: 'France', value: 85, status: 'active' },
+  { name: 'Italy', value: 70, status: 'active' },
+  { name: 'Germany', value: 55, status: 'active' },
+  { name: 'United Kingdom', value: 40, status: 'planned' },
+  { name: 'Portugal', value: 35, status: 'active' },
+  { name: 'Netherlands', value: 60, status: 'active' },
+  { name: 'Belgium', value: 45, status: 'active' },
+  { name: 'Switzerland', value: 30, status: 'planned' },
+  { name: 'Austria', value: 25, status: 'planned' },
+  { name: 'Greece', value: 20, status: 'planned' },
+  { name: 'Poland', value: 15, status: 'planned' },
+  { name: 'Czech Republic', value: 10, status: 'planned' },
+  { name: 'Ireland', value: 12, status: 'planned' },
+  { name: 'Denmark', value: 8, status: 'planned' },
+  { name: 'Sweden', value: 6, status: 'planned' },
+  { name: 'Norway', value: 4, status: 'planned' },
+  { name: 'Finland', value: 3, status: 'planned' }
 ]);
 
 // Configuración mejorada para los gráficos
