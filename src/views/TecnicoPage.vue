@@ -60,79 +60,70 @@
               </div>
               <div class="chart-card-content">
                 <div class="storage-info">
-                  <div class="storage-gauge">
-                    <ApexMixedChart 
-                      :series="[{
-                        name: 'Uso',
-                        data: [storageUsage]
-                      }]"
-                      type="radialBar"
-                      :colors="['#ffd43b']"
-                      :chartOptions="{
-                        ...chartOptions.gauge,
-                        chart: {
-                          height: 150
+                  <ApexMixedChart 
+                    :series="[{
+                      name: 'Almacenamiento',
+                      data: [storageUsage, 100 - storageUsage]
+                    }]"
+                    type="donut"
+                    :colors="['#ffd43b', '#e9ecef']"
+                    :chartOptions="{
+                      ...chartOptions.donut,
+                      chart: {
+                        height: 250
+                      },
+                      labels: ['Usado', 'Libre'],
+                      dataLabels: {
+                        enabled: true,
+                        formatter: function (val: number) {
+                          return val.toFixed(1) + '%';
                         }
-                      }"
-                    />
-                  </div>
-                  <div class="storage-details">
-                    <div class="storage-summary">
-                      <div class="storage-total">
-                        <ion-icon :icon="hardwareChip" class="storage-icon"></ion-icon>
-                        <div class="storage-info-text">
-                          <span class="label">Total</span>
-                          <span class="value">{{ storageCapacity }} GB</span>
-                        </div>
-                      </div>
-                      <div class="storage-used">
-                        <ion-icon :icon="cloudUpload" class="storage-icon"></ion-icon>
-                        <div class="storage-info-text">
-                          <span class="label">Usado</span>
-                          <span class="value">{{ (storageCapacity * storageUsage / 100).toFixed(1) }} GB</span>
-                        </div>
-                      </div>
-                      <div class="storage-free">
-                        <ion-icon :icon="cloudDownload" class="storage-icon"></ion-icon>
-                        <div class="storage-info-text">
-                          <span class="label">Libre</span>
-                          <span class="value">{{ (storageCapacity * (100 - storageUsage) / 100).toFixed(1) }} GB</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="storage-breakdown">
-                      <ApexMixedChart 
-                        :series="[{
-                          name: 'Almacenamiento',
-                          data: storageData.map(item => item.value)
-                        }]"
-                        type="donut"
-                        :colors="storageData.map(item => item.color)"
-                        :chartOptions="{
-                          ...chartOptions.donut,
-                          chart: {
-                            height: 150
-                          },
-                          labels: storageData.map(item => item.name),
-                          dataLabels: {
-                            enabled: true,
-                            formatter: function (val: number) {
-                              return val.toFixed(1) + ' GB';
-                            }
-                          },
-                          legend: {
-                            position: 'bottom',
-                            fontSize: '12px',
-                            markers: {
-                              width: 12,
-                              height: 12,
-                              radius: 6
+                      },
+                      legend: {
+                        position: 'bottom',
+                        fontSize: '12px',
+                        markers: {
+                          width: 12,
+                          height: 12,
+                          radius: 6
+                        }
+                      },
+                      plotOptions: {
+                        pie: {
+                          donut: {
+                            size: '70%',
+                            labels: {
+                              show: true,
+                              name: {
+                                show: true,
+                                fontSize: '16px',
+                                fontWeight: 600,
+                                offsetY: -10
+                              },
+                              value: {
+                                show: true,
+                                fontSize: '24px',
+                                fontWeight: 700,
+                                offsetY: 10,
+                                formatter: function (val: number) {
+                                  return ((val * Number(storageCapacity)) / 100).toFixed(1) + ' GB';
+                                }
+                              },
+                              total: {
+                                show: true,
+                                label: 'Total',
+                                fontSize: '14px',
+                                fontWeight: 600,
+                                formatter: function () {
+                                  return storageCapacity + ' GB';
+                                }
+                              }
                             }
                           }
-                        }"
-                      />
-                    </div>
-                  </div>
+                        }
+                      }
+                    }"
+                  />
                 </div>
               </div>
             </div>
@@ -148,14 +139,61 @@
                 <ApexMixedChart 
                   :series="[{
                     name: 'Errores',
-                    data: errorTypesSeries.map((e: ErrorData) => e.count)
+                    data: errorTypesSeries.map((e: ErrorData) => ({
+                      x: e.type,
+                      y: e.count
+                    }))
                   }]"
                   type="bar"
                   :colors="errorTypesSeries.map((e: ErrorData) => e.color)"
                   :chartOptions="{
-                    ...chartOptions.bar,
                     chart: {
-                      height: 200
+                      height: 200,
+                      type: 'bar',
+                      toolbar: {
+                        show: false
+                      }
+                    },
+                    plotOptions: {
+                      bar: {
+                        horizontal: false,
+                        columnWidth: '60%',
+                        borderRadius: 4,
+                        distributed: true
+                      }
+                    },
+                    dataLabels: {
+                      enabled: true,
+                      formatter: function(val: number) {
+                        return val + ' errores';
+                      },
+                      style: {
+                        fontSize: '12px',
+                        colors: ['#fff']
+                      }
+                    },
+                    legend: {
+                      show: false
+                    },
+                    xaxis: {
+                      categories: errorTypesSeries.map((e: ErrorData) => e.type),
+                      labels: {
+                        style: {
+                          fontSize: '12px'
+                        }
+                      }
+                    },
+                    yaxis: {
+                      title: {
+                        text: 'Cantidad de errores'
+                      }
+                    },
+                    tooltip: {
+                      y: {
+                        formatter: function(val: number) {
+                          return val + ' errores';
+                        }
+                      }
                     }
                   }"
                 />
@@ -291,21 +329,37 @@ interface ChartOptions {
       };
     };
   };
-  bar: {
-    distributed: boolean;
+  pie: {
+    chart: {
+      height: number;
+    };
+    labels: string[];
     dataLabels: {
+      enabled: boolean;
+      formatter: (val: number) => string;
+    };
+    legend: {
       position: string;
-      style: {
-        fontSize: string;
-        colors: string[];
+      fontSize: string;
+      markers: {
+        width: number;
+        height: number;
+        radius: number;
       };
     };
+  };
+  treemap: {
+    chart: {
+      height: number;
+    };
     plotOptions: {
-      bar: {
-        borderRadius: number;
-        horizontal: boolean;
-        columnWidth: string;
+      treemap: {
+        distributed: boolean;
+        enableShades: boolean;
       };
+    };
+    dataLabels: {
+      formatter: (text: string, op: any) => string[];
     };
   };
   donut: {
@@ -324,6 +378,36 @@ interface ChartOptions {
         width: number;
         height: number;
         radius: number;
+      };
+    };
+    plotOptions: {
+      pie: {
+        donut: {
+          size: string;
+          labels: {
+            show: boolean;
+            name: {
+              show: boolean;
+              fontSize: string;
+              fontWeight: number;
+              offsetY: number;
+            };
+            value: {
+              show: boolean;
+              fontSize: string;
+              fontWeight: number;
+              offsetY: number;
+              formatter: (val: number) => string;
+            };
+            total: {
+              show: boolean;
+              label: string;
+              fontSize: string;
+              fontWeight: number;
+              formatter: () => string;
+            };
+          };
+        };
       };
     };
   };
@@ -366,9 +450,7 @@ const errorTypesSeries = ref<ErrorData[]>([
   { type: '404 - Página no encontrada', count: 25, severity: 'medium', color: '#f06595' },
   { type: '500 - Error interno', count: 18, severity: 'high', color: '#ff6b6b' },
   { type: 'Autenticación', count: 22, severity: 'high', color: '#cc5de8' },
-  { type: 'Base de datos', count: 15, severity: 'critical', color: '#845ef7' },
-  { type: 'Timeout', count: 13, severity: 'medium', color: '#4dabf7' },
-  { type: 'Validación', count: 17, severity: 'low', color: '#20c997' }
+  { type: 'Base de datos', count: 15, severity: 'critical', color: '#845ef7' }
 ]);
 
 const storageUsage = ref(92.5);
@@ -379,30 +461,22 @@ const storageData = ref([
   {
     name: 'Base de datos',
     value: 45.8,
-    color: '#845ef7',
-    icon: 'server',
-    growth: '+5.2%'
+    color: '#845ef7'
   },
   {
     name: 'Imágenes',
     value: 28.3,
-    color: '#20c997',
-    icon: 'image',
-    growth: '+12.8%'
+    color: '#20c997'
   },
   {
     name: 'Logs',
     value: 12.4,
-    color: '#ff922b',
-    icon: 'document-text',
-    growth: '+3.5%'
+    color: '#ff922b'
   },
   {
     name: 'Backups',
     value: 6.0,
-    color: '#fcc419',
-    icon: 'save',
-    growth: '-1.2%'
+    color: '#fcc419'
   }
 ]);
 
@@ -522,24 +596,7 @@ const chartOptions: ChartOptions = {
       }
     }
   },
-  bar: {
-    distributed: true,
-    dataLabels: {
-      position: 'top',
-      style: {
-        fontSize: '12px',
-        colors: ['#333']
-      }
-    },
-    plotOptions: {
-      bar: {
-        borderRadius: 4,
-        horizontal: false,
-        columnWidth: '70%'
-      }
-    }
-  },
-  donut: {
+  pie: {
     chart: {
       height: 150
     },
@@ -557,6 +614,77 @@ const chartOptions: ChartOptions = {
         width: 12,
         height: 12,
         radius: 6
+      }
+    }
+  },
+  treemap: {
+    chart: {
+      height: 200
+    },
+    plotOptions: {
+      treemap: {
+        distributed: true,
+        enableShades: false
+      }
+    },
+    dataLabels: {
+      formatter: function(text: string, op: any) {
+        return [text, op.value + ' errores']
+      }
+    }
+  },
+  donut: {
+    chart: {
+      height: 250
+    },
+    labels: ['Usado', 'Libre'],
+    dataLabels: {
+      enabled: true,
+      formatter: function (val: number) {
+        return val.toFixed(1) + '%';
+      }
+    },
+    legend: {
+      position: 'bottom',
+      fontSize: '12px',
+      markers: {
+        width: 12,
+        height: 12,
+        radius: 6
+      }
+    },
+    plotOptions: {
+      pie: {
+        donut: {
+          size: '70%',
+          labels: {
+            show: true,
+            name: {
+              show: true,
+              fontSize: '16px',
+              fontWeight: 600,
+              offsetY: -10
+            },
+            value: {
+              show: true,
+              fontSize: '24px',
+              fontWeight: 700,
+              offsetY: 10,
+              formatter: function (val: number) {
+                return ((val * Number(storageCapacity)) / 100).toFixed(1) + ' GB';
+              }
+            },
+            total: {
+              show: true,
+              label: 'Total',
+              fontSize: '14px',
+              fontWeight: 600,
+              formatter: function () {
+                return storageCapacity + ' GB';
+              }
+            }
+          }
+        }
       }
     }
   }
@@ -638,8 +766,10 @@ const formatNumber = (value: number) => {
 
 .storage-info {
   display: flex;
-  gap: 1rem;
+  align-items: center;
+  justify-content: center;
   height: 100%;
+  padding: 1rem;
 }
 
 .storage-gauge {
@@ -728,15 +858,7 @@ const formatNumber = (value: number) => {
   }
 
   .storage-info {
-    flex-direction: column;
-  }
-
-  .storage-summary {
-    grid-template-columns: 1fr;
-  }
-
-  .storage-breakdown {
-    min-height: 200px;
+    min-height: 300px;
   }
 }
 </style>
