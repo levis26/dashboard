@@ -53,6 +53,8 @@
             :icon="kpi.icon"
             :theme="kpi.theme"
             :reverse-trend="kpi.reverseTrend"
+            :is-storage-kpi="kpi.isStorageKpi"
+            :storage-percentage="kpi.storagePercentage"
           />
         </div>
       </section>
@@ -102,6 +104,16 @@ const businessKpis = ref([
 ]);
 
 const techKpis = ref([
+  {
+    title: 'Almacenamiento',
+    value: '1.2 TB',
+    trend: 75,
+    description: 'Espacio utilizado: 75%',
+    icon: serverOutline,
+    theme: 'blue',
+    isStorageKpi: true,
+    storagePercentage: 75
+  },
   {
     title: 'Tiempo de carga',
     value: '1.8s',

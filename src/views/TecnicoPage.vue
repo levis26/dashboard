@@ -60,69 +60,9 @@
               </div>
               <div class="chart-card-content">
                 <div class="storage-info">
-                  <ApexMixedChart 
-                    :series="[{
-                      name: 'Almacenamiento',
-                      data: [storageUsage, 100 - storageUsage]
-                    }]"
-                    type="donut"
-                    :colors="['#ffd43b', '#e9ecef']"
-                    :chartOptions="{
-                      ...chartOptions.donut,
-                      chart: {
-                        height: 250
-                      },
-                      labels: ['Usado', 'Libre'],
-                      dataLabels: {
-                        enabled: true,
-                        formatter: function (val: number) {
-                          return val.toFixed(1) + '%';
-                        }
-                      },
-                      legend: {
-                        position: 'bottom',
-                        fontSize: '12px',
-                        markers: {
-                          width: 12,
-                          height: 12,
-                          radius: 6
-                        }
-                      },
-                      plotOptions: {
-                        pie: {
-                          donut: {
-                            size: '70%',
-                            labels: {
-                              show: true,
-                              name: {
-                                show: true,
-                                fontSize: '16px',
-                                fontWeight: 600,
-                                offsetY: -10
-                              },
-                              value: {
-                                show: true,
-                                fontSize: '24px',
-                                fontWeight: 700,
-                                offsetY: 10,
-                                formatter: function (val: number) {
-                                  return ((val * Number(storageCapacity)) / 100).toFixed(1) + ' GB';
-                                }
-                              },
-                              total: {
-                                show: true,
-                                label: 'Total',
-                                fontSize: '14px',
-                                fontWeight: 600,
-                                formatter: function () {
-                                  return storageCapacity + ' GB';
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }"
+                  <CircularStorageChart 
+                    :storage-percentage="storageUsage"
+                    :theme-color="'#ffd43b'"
                   />
                 </div>
               </div>
@@ -234,14 +174,30 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { 
-  IonButtons, IonContent, IonHeader, 
-  IonMenuButton, IonPage, IonTitle, IonToolbar, 
-  IonGrid, IonRow, IonCol, IonIcon 
+  IonButtons, 
+  IonContent, 
+  IonHeader, 
+  IonMenuButton, 
+  IonPage, 
+  IonTitle, 
+  IonToolbar, 
+  IonGrid, 
+  IonRow, 
+  IonCol, 
+  IonIcon 
 } from '@ionic/vue';
 import { 
-  speedometer, people, server, bug, codeWorking, hardwareChip, cloudUpload, cloudDownload 
+  speedometer, 
+  people, 
+  server, 
+  bug, 
+  codeWorking, 
+  hardwareChip, 
+  cloudUpload, 
+  cloudDownload 
 } from 'ionicons/icons';
 import ApexMixedChart from '@/components/ApexMixedChart.vue';
+import CircularStorageChart from '@/components/CircularStorageChart.vue';
 
 // Interfaces
 interface ChartDataPoint {

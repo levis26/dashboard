@@ -23,7 +23,16 @@
         <span class="card-description">{{ description }}</span>
       </div>
       
-      <div class="progress-bar">
+      <template v-if="isStorageKpi">
+        <div class="storage-chart-container">
+          <CircularStorageChart 
+            :storage-percentage="storagePercentage"
+            :theme-color="themeColor"
+          />
+        </div>
+      </template>
+      
+      <div v-else class="progress-bar">
         <div class="progress-fill" :style="progressStyle"></div>
       </div>
     </div>
@@ -32,6 +41,7 @@
   <script setup lang="ts">
   import { IonIcon } from '@ionic/vue';
   import { computed, ref } from 'vue';
+  import CircularStorageChart from './CircularStorageChart.vue';
   
   const props = defineProps({
     title: { type: String, required: true },
@@ -40,7 +50,21 @@
     description: { type: String, required: true },
     icon: { type: Object, required: true },
     theme: { type: String, default: 'blue' },
-    reverseTrend: { type: Boolean, default: false }
+    reverseTrend: { type: Boolean, default: false },
+    storagePercentage: { type: Number, default: 0 },
+    isStorageKpi: { type: Boolean, default: false }
+  });
+
+  const themeColor = computed(() => {
+    const colors = {
+      blue: '#007AFF',
+      green: '#34C759',
+      red: '#FF3B30',
+      purple: '#5856D6',
+      orange: '#FF9500',
+      yellow: '#FFCC00'
+    };
+    return colors[props.theme] || '#007AFF';
   });
   
   const pulse = ref(false);
@@ -99,6 +123,12 @@
     display: flex;
     align-items: center;
     margin-bottom: 1rem;
+  }
+
+  .storage-chart-container {
+    margin-top: 1rem;
+    width: 100%;
+    height: 120px;
   }
   
   .icon-container {
