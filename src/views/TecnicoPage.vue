@@ -839,29 +839,52 @@ const formatNumber = (value: number) => {
 
 .storage-info {
   display: flex;
-  gap: 2rem;
+  gap: 1.5rem;
   align-items: center;
   height: 100%;
   padding: 1rem;
+  max-height: 400px;
+  overflow: hidden;
 }
 
 .storage-gauge {
   flex: 1;
   min-width: 200px;
+  max-width: 40%;
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .storage-details {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
+  max-width: 60%;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.storage-details::-webkit-scrollbar {
+  width: 6px;
+}
+
+.storage-details::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 3px;
+}
+
+.storage-details::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
 }
 
 .storage-summary {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
 .storage-total,
@@ -869,11 +892,12 @@ const formatNumber = (value: number) => {
 .storage-free {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: 1rem;
+  gap: 0.75rem;
+  padding: 0.75rem;
   background: rgba(0, 0, 0, 0.02);
   border-radius: 12px;
   transition: all 0.3s ease;
+  min-height: 60px;
 }
 
 .storage-total:hover,
@@ -895,70 +919,88 @@ const formatNumber = (value: number) => {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+  min-width: 0;
 }
 
 .storage-info-text .label {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: var(--ion-color-medium);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .storage-info-text .value {
+  font-size: 0.9rem;
   font-weight: 600;
   color: var(--ion-color-dark);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .storage-breakdown {
   background: rgba(0, 0, 0, 0.02);
   border-radius: 12px;
   padding: 1rem;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .storage-breakdown h4 {
-  margin: 0 0 1rem 0;
-  font-size: 1rem;
+  margin: 0 0 0.75rem 0;
+  font-size: 0.9rem;
   color: var(--ion-color-medium);
+  position: sticky;
+  top: 0;
+  background: rgba(0, 0, 0, 0.02);
+  padding: 0.5rem 0;
+  z-index: 1;
 }
 
 .storage-items {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.75rem;
+  overflow-y: auto;
+  padding-right: 0.5rem;
 }
 
 .storage-item {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  min-height: 50px;
 }
 
 .storage-item-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 0.5rem;
 }
 
 .storage-item-info {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-}
-
-.storage-item-icon {
-  font-size: 1.25rem;
-  padding: 0.25rem;
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 6px;
+  gap: 0.5rem;
+  min-width: 0;
 }
 
 .storage-item .name {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: var(--ion-color-dark);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .storage-item-progress {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
 .progress-bar {
@@ -967,20 +1009,16 @@ const formatNumber = (value: number) => {
   background: rgba(0, 0, 0, 0.05);
   border-radius: 3px;
   overflow: hidden;
-}
-
-.progress-fill {
-  height: 100%;
-  border-radius: 3px;
-  transition: width 0.3s ease;
+  min-width: 0;
 }
 
 .storage-item .value {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 600;
   color: var(--ion-color-medium);
   min-width: 60px;
   text-align: right;
+  white-space: nowrap;
 }
 
 .growth {
@@ -1004,14 +1042,18 @@ const formatNumber = (value: number) => {
   .storage-info {
     flex-direction: column;
     gap: 1.5rem;
+    max-height: none;
   }
 
   .storage-gauge {
     width: 100%;
+    max-width: 100%;
+    min-height: 250px;
   }
 
   .storage-details {
     width: 100%;
+    max-width: 100%;
   }
 
   .storage-summary {

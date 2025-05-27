@@ -619,32 +619,58 @@ const formatCurrency = (value: number) => {
 
 .categories-container {
   display: flex;
-  gap: 2rem;
+  gap: 1.5rem;
   height: 100%;
+  max-height: 400px;
+  overflow: hidden;
 }
 
 .categories-chart {
   flex: 1;
-  min-width: 300px;
+  min-width: 250px;
+  max-width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .categories-details {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  min-width: 250px;
+  gap: 0.75rem;
+  min-width: 200px;
+  max-width: 50%;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.categories-details::-webkit-scrollbar {
+  width: 6px;
+}
+
+.categories-details::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 3px;
+}
+
+.categories-details::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
 }
 
 .categories-header {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr;
-  gap: 1rem;
+  gap: 0.75rem;
   padding: 0.5rem;
   background: rgba(0, 0, 0, 0.02);
   border-radius: 8px;
   font-weight: 600;
   color: var(--ion-color-medium);
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
 .categories-list {
@@ -656,12 +682,13 @@ const formatCurrency = (value: number) => {
 .category-item {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr;
-  gap: 1rem;
+  gap: 0.75rem;
   align-items: center;
   padding: 0.75rem;
   background: rgba(0, 0, 0, 0.02);
   border-radius: 8px;
   transition: all 0.3s ease;
+  min-height: 40px;
 }
 
 .category-item:hover {
@@ -672,18 +699,21 @@ const formatCurrency = (value: number) => {
 .category-info {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.category-info .name {
+  font-size: 0.85rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .color-dot {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-}
-
-.category-item .name {
-  font-size: 0.9rem;
-  color: var(--ion-color-dark);
 }
 
 .category-item .value {
@@ -712,11 +742,17 @@ const formatCurrency = (value: number) => {
   .categories-container {
     flex-direction: column;
     gap: 1rem;
+    max-height: none;
   }
 
   .categories-chart,
   .categories-details {
     width: 100%;
+    max-width: 100%;
+  }
+
+  .categories-chart {
+    min-height: 300px;
   }
 }
 </style>
