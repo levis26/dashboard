@@ -70,15 +70,120 @@
                 <ion-icon :icon="server" class="chart-card-icon"></ion-icon>
               </div>
               <div class="chart-card-content">
-                <ApexMixedChart 
-                  :series="[{
-                    name: 'Uso',
-                    data: [storageUsage]
-                  }]"
-                  type="radialBar"
-                  :colors="['#ffd43b']"
-                  :chartOptions="chartOptions.gauge"
-                />
+                <div class="storage-info">
+                  <div class="storage-gauge">
+                    <ApexMixedChart 
+                      :series="[{
+                        name: 'Uso',
+                        data: [storageUsage]
+                      }]"
+                      type="radialBar"
+                      :colors="['#ffd43b']"
+                      :chartOptions="{
+                        ...chartOptions.gauge,
+                        plotOptions: {
+                          radialBar: {
+                            startAngle: -135,
+                            endAngle: 135,
+                            hollow: {
+                              size: '70%',
+                              background: '#fff',
+                              image: undefined,
+                              imageOffsetX: 0,
+                              imageOffsetY: 0,
+                              position: 'front',
+                              dropShadow: {
+                                enabled: true,
+                                top: 3,
+                                left: 0,
+                                blur: 4,
+                                opacity: 0.24
+                              }
+                            },
+                            track: {
+                              background: '#f1f1f1',
+                              strokeWidth: '97%',
+                              margin: 5,
+                              dropShadow: {
+                                enabled: true,
+                                top: 2,
+                                left: 0,
+                                blur: 4,
+                                opacity: 0.15
+                              }
+                            },
+                            dataLabels: {
+                              name: {
+                                show: true,
+                                fontSize: '16px',
+                                fontWeight: 600,
+                                offsetY: 0,
+                                color: '#333'
+                              },
+                              value: {
+                                show: true,
+                                fontSize: '28px',
+                                fontWeight: 700,
+                                offsetY: 0,
+                                color: '#333',
+                                formatter: function (val: number) {
+                                  return val + '%';
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }"
+                    />
+                  </div>
+                  <div class="storage-details">
+                    <div class="storage-summary">
+                      <div class="storage-total">
+                        <ion-icon :icon="hardwareChip" class="storage-icon"></ion-icon>
+                        <div class="storage-info-text">
+                          <span class="label">Capacidad Total</span>
+                          <span class="value">{{ storageCapacity }} GB</span>
+                        </div>
+                      </div>
+                      <div class="storage-used">
+                        <ion-icon :icon="cloudUpload" class="storage-icon"></ion-icon>
+                        <div class="storage-info-text">
+                          <span class="label">Espacio Usado</span>
+                          <span class="value">{{ (storageCapacity * storageUsage / 100).toFixed(1) }} GB</span>
+                        </div>
+                      </div>
+                      <div class="storage-free">
+                        <ion-icon :icon="cloudDownload" class="storage-icon"></ion-icon>
+                        <div class="storage-info-text">
+                          <span class="label">Espacio Libre</span>
+                          <span class="value">{{ (storageCapacity * (100 - storageUsage) / 100).toFixed(1) }} GB</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="storage-breakdown">
+                      <h4>Desglose por Tipo</h4>
+                      <div class="storage-items">
+                        <div v-for="item in storageData" :key="item.name" class="storage-item">
+                          <div class="storage-item-header">
+                            <div class="storage-item-info">
+                              <ion-icon :icon="item.icon" class="storage-item-icon" :style="{ color: item.color }"></ion-icon>
+                              <span class="name">{{ item.name }}</span>
+                            </div>
+                            <span class="growth" :class="{ 'positive': item.growth.startsWith('+'), 'negative': item.growth.startsWith('-') }">
+                              {{ item.growth }}
+                            </span>
+                          </div>
+                          <div class="storage-item-progress">
+                            <div class="progress-bar">
+                              <div class="progress-fill" :style="{ width: (item.value / storageCapacity * 100) + '%', backgroundColor: item.color }"></div>
+                            </div>
+                            <span class="value">{{ item.value }} GB</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
               <div class="chart-card-footer">
                 <p>Espacio de almacenamiento utilizado: {{ storageUsage }}%</p>
@@ -164,7 +269,7 @@ import {
   IonGrid, IonRow, IonCol, IonIcon 
 } from '@ionic/vue';
 import { 
-  speedometer, people, server, bug, codeWorking 
+  speedometer, people, server, bug, codeWorking, hardwareChip, cloudUpload, cloudDownload 
 } from 'ionicons/icons';
 import ApexMixedChart from '@/components/ApexMixedChart.vue';
 
@@ -317,6 +422,38 @@ const errorTypesSeries = ref<ErrorData[]>([
 
 const storageUsage = ref(92.5);
 const storageCapacity = ref(128);
+
+// Datos de almacenamiento por tipo
+const storageData = ref([
+  {
+    name: 'Base de datos',
+    value: 45.8,
+    color: '#845ef7',
+    icon: 'server',
+    growth: '+5.2%'
+  },
+  {
+    name: 'Imágenes',
+    value: 28.3,
+    color: '#20c997',
+    icon: 'image',
+    growth: '+12.8%'
+  },
+  {
+    name: 'Logs',
+    value: 12.4,
+    color: '#ff922b',
+    icon: 'document-text',
+    growth: '+3.5%'
+  },
+  {
+    name: 'Backups',
+    value: 6.0,
+    color: '#fcc419',
+    icon: 'save',
+    growth: '-1.2%'
+  }
+]);
 
 const apiRequestsSeries = ref<ApiRequestData[]>([
   {
@@ -698,5 +835,187 @@ const formatNumber = (value: number) => {
   border-radius: 16px;
   background: linear-gradient(135deg, rgba(32, 201, 151, 0.03), rgba(32, 201, 151, 0.01));
   pointer-events: none;
+}
+
+.storage-info {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  height: 100%;
+  padding: 1rem;
+}
+
+.storage-gauge {
+  flex: 1;
+  min-width: 200px;
+  position: relative;
+}
+
+.storage-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.storage-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.storage-total,
+.storage-used,
+.storage-free {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.storage-total:hover,
+.storage-used:hover,
+.storage-free:hover {
+  background: rgba(0, 0, 0, 0.04);
+  transform: translateY(-2px);
+}
+
+.storage-icon {
+  font-size: 1.5rem;
+  color: var(--ion-color-primary);
+  padding: 0.5rem;
+  background: rgba(var(--ion-color-primary-rgb), 0.1);
+  border-radius: 8px;
+}
+
+.storage-info-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.storage-info-text .label {
+  font-size: 0.85rem;
+  color: var(--ion-color-medium);
+}
+
+.storage-info-text .value {
+  font-weight: 600;
+  color: var(--ion-color-dark);
+}
+
+.storage-breakdown {
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.storage-breakdown h4 {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  color: var(--ion-color-medium);
+}
+
+.storage-items {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.storage-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.storage-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.storage-item-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.storage-item-icon {
+  font-size: 1.25rem;
+  padding: 0.25rem;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 6px;
+}
+
+.storage-item .name {
+  font-size: 0.9rem;
+  color: var(--ion-color-dark);
+}
+
+.storage-item-progress {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 6px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.storage-item .value {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ion-color-medium);
+  min-width: 60px;
+  text-align: right;
+}
+
+.growth {
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.growth.positive {
+  background: rgba(76, 175, 80, 0.1);
+  color: #4caf50;
+}
+
+.growth.negative {
+  background: rgba(244, 67, 54, 0.1);
+  color: #f44336;
+}
+
+@media (max-width: 991px) {
+  .storage-info {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .storage-gauge {
+    width: 100%;
+  }
+
+  .storage-details {
+    width: 100%;
+  }
+
+  .storage-summary {
+    grid-template-columns: 1fr;
+  }
 }
 </style>
