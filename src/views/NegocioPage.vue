@@ -16,108 +16,147 @@
         </ion-toolbar>
       </ion-header>
 
-      <ion-grid class="dashboard-grid">
+      <div class="dashboard-container">
         <!-- Fila 1: Productos y Clientes -->
-        <ion-row class="dashboard-row">
-          <ion-col size="12" size-md="6">
-            <div class="chart-box">
-              <h3>Productos más vendidos</h3>
-              <ApexMixedChart 
-                :series="topProductsSeries" 
-                type="bar"
-                :chartOptions="chartOptions"
-                :colors="['#4caf50']"
-              />
-            </div>
-          </ion-col>
-          <ion-col size="12" size-md="6">
-            <div class="chart-box">
-              <h3>Clientes más frecuentes</h3>
-              <ApexMixedChart 
-                :series="topCustomersSeries" 
-                type="area"
-                :colors="['#2196f3']"
-              />
-            </div>
-          </ion-col>
-        </ion-row>
+        <div class="dashboard-row">
+          <div class="chart-box">
+            <h3>Productos más vendidos</h3>
+            <ApexMixedChart 
+              :series="topProductsSeries" 
+              type="bar"
+              :chartOptions="chartOptions"
+              :colors="['#4caf50']"
+            />
+          </div>
+          <div class="chart-box">
+            <h3>Clientes más frecuentes</h3>
+            <ApexMixedChart 
+              :series="topCustomersSeries" 
+              type="area"
+              :colors="['#2196f3']"
+            />
+          </div>
+        </div>
 
         <!-- Fila 2: Ventas y Categorías -->
-        <ion-row class="dashboard-row">
-          <ion-col size="12" size-md="8">
-            <div class="chart-box">
-              <h3>Ventas mensuales</h3>
-              <ApexMixedChart 
-                :series="monthlySalesSeries" 
-                type="line"
-                :colors="['#ff9800']"
-                yTitle="€"
-                :strokeWidth="[3]"
-              />
-            </div>
-          </ion-col>
-          <ion-col size="12" size-md="4">
-            <div class="chart-box">
-              <h3>Categorías más vendidas</h3>
-              <div class="categories-container">
-                <div class="categories-chart">
-                  <ApexMixedChart 
-                    :series="categoriesSeries" 
-                    type="donut"
-                    :colors="categoriesData.map(c => c.color)"
-                    :chartOptions="{
-                      ...chartOptions.donut,
-                      chart: {
-                        height: 200
-                      }
-                    }"
-                  />
-                </div>
-                <div class="categories-details">
-                  <div class="categories-list">
-                    <div v-for="category in categoriesData" :key="category.name" class="category-item">
-                      <div class="category-info">
-                        <div class="color-dot" :style="{ backgroundColor: category.color }"></div>
-                        <span class="name">{{ category.name }}</span>
-                      </div>
-                      <span class="value">{{ category.items }}</span>
-                      <span class="growth" :class="{ 'positive': category.growth.startsWith('+'), 'negative': category.growth.startsWith('-') }">
-                        {{ category.growth }}
-                      </span>
+        <div class="dashboard-row">
+          <div class="chart-box">
+            <h3>Ventas mensuales</h3>
+            <ApexMixedChart 
+              :series="monthlySalesSeries" 
+              type="line"
+              :colors="['#ff9800']"
+              yTitle="€"
+              :strokeWidth="[3]"
+            />
+          </div>
+          <div class="chart-box">
+            <h3>Categorías más vendidas</h3>
+            <div class="categories-container">
+              <div class="categories-chart">
+                <CategoriesSunburstChart 
+                  :categories-data="categoriesData" 
+                />
+              </div>
+              <div class="categories-details">
+                <div class="categories-list">
+                  <div v-for="category in categoriesData" :key="category.name" class="category-item">
+                    <div class="category-info">
+                      <div class="color-dot" :style="{ backgroundColor: category.color }"></div>
+                      <span class="name">{{ category.name }}</span>
                     </div>
+                    <span class="value">{{ category.items }}</span>
+                    <span class="growth" :class="{ 'positive': category.growth.startsWith('+'), 'negative': category.growth.startsWith('-') }">
+                      {{ category.growth }}
+                    </span>
                   </div>
                 </div>
               </div>
             </div>
-          </ion-col>
-        </ion-row>
+          </div>
+        </div>
 
         <!-- Fila 3: Ofertas y Expansión -->
-        <ion-row class="dashboard-row">
-          <ion-col size="12" size-md="6">
-            <div class="chart-box">
-              <h3>Productos en oferta vs. sin oferta</h3>
-              <ApexMixedChart 
-                :series="discountComparisonSeries"
-                type="heatmap"
-                :colors="['#607d8b', '#ff5722']"
-                :chartOptions="chartOptions"
-              />
-            </div>
-          </ion-col>
-          <ion-col size="12" size-md="6">
-            <div class="chart-box">
-              <h3>Expansión Kinisi en Europa</h3>
-              <EchartsMap 
-                :data="expansionData"
-                :mapName="'europe'"
-                title="Expansión Kinisi"
-                subtitle="Presencia en países europeos"
-              />
-            </div>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
+        <div class="dashboard-row">
+          <div class="chart-box">
+            <h3>Productos en oferta vs. sin oferta</h3>
+            <ApexMixedChart 
+              :series="discountComparisonSeries"
+              type="heatmap"
+              :chartOptions="{
+                chart: {
+                  type: 'heatmap',
+                  height: 350,
+                  toolbar: { show: false }
+                },
+                xaxis: {
+                  type: 'category',
+                  categories: products,
+                  labels: {
+                    style: { colors: '#666', fontSize: '12px' }
+                  }
+                },
+                yaxis: {
+                  type: 'category',
+                  categories: ['En oferta', 'Sin oferta'],
+                  title: { text: 'Estado' },
+                  labels: {
+                    style: { colors: '#666', fontSize: '12px' }
+                  }
+                },
+                plotOptions: {
+                  heatmap: {
+                    colorScale: {
+                      ranges: [
+                        { from: 0, to: 30, color: '#607d8b' },
+                        { from: 31, to: 70, color: '#ff5722' },
+                        { from: 71, to: 100, color: '#e91e63' }
+                      ]
+                    },
+                    distributed: true,
+                    enableShades: true,
+                    shadeIntensity: 0.5
+                  }
+                },
+                dataLabels: {
+                  enabled: true,
+                  formatter: function(val: any) {
+                    return val.value || '';
+                  },
+                  style: {
+                    colors: ['#fff'],
+                    fontSize: '12px',
+                    fontWeight: 'bold'
+                  }
+                },
+                tooltip: {
+                  enabled: true,
+                  y: {
+                    formatter: function(val: string, opts: any) {
+                      if (opts && opts.value) {
+                        const percentage = Math.round((opts.value / 100) * 100);
+                        return `<strong>${opts.value} ventas (${percentage}%)</strong><br>
+                               <span style='color:${opts.color}'>${val}</span>`;
+                      }
+                      return '';
+                    }
+                  }
+                },
+                legend: { show: false }
+              }"
+            />
+          </div>
+          <div class="chart-box">
+            <h3>Expansión Kinisi en Europa</h3>
+            <EchartsMap 
+              :data="expansionData"
+              :mapName="'europe'"
+              title="Expansión Kinisi"
+              subtitle="Presencia en países europeos"
+            />
+          </div>
+        </div>
+      </div>
     </ion-content>
   </ion-page>
 </template>
@@ -127,11 +166,24 @@ import { ref } from 'vue';
 import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonGrid, IonRow, IonCol } from '@ionic/vue';
 import ApexMixedChart from '@/components/ApexMixedChart.vue';
 import EchartsMap from '@/components/EchartsMap.vue';
+import CategoriesSunburstChart from '@/components/CategoriesSunburstChart.vue';
 
 // Interfaces
 interface ChartDataPoint {
   x: string;
   y: number;
+}
+
+interface HeatmapDataPoint {
+  x: string;
+  y: string;
+  value: number;
+}
+
+interface TooltipOptions {
+  value: number;
+  color: string;
+  seriesName?: string;
 }
 
 interface ExpansionData {
@@ -144,11 +196,12 @@ interface ExpansionData {
 const topProductsSeries = ref([{
   name: 'Ventas',
   data: [
-    { x: 'Leotardos Premium', y: 245 },
-    { x: 'Mallas Ballet', y: 198 },
-    { x: 'Zapatillas Jazz', y: 185 },
-    { x: 'Tops Danza', y: 172 },
-    { x: 'Faldas Ballet', y: 165 }
+    { x: 'Leotardos Premium', y: 85 },
+    { x: 'Mallas Ballet', y: 95 },
+    { x: 'Zapatillas Jazz', y: 105 },
+    { x: 'Tops Danza', y: 75 },
+    { x: 'Faldas Ballet', y: 90 },
+    { x: 'Accesorios', y: 65 }
   ]
 }]);
 
@@ -247,17 +300,17 @@ const discountComparisonSeries = ref([{
   name: 'Ventas',
   data: [
     { x: 'Leotardos Premium', y: 'En oferta', value: 85 },
-    { x: 'Leotardos Premium', y: 'Sin oferta', value: 45 },
-    { x: 'Mallas Ballet', y: 'En oferta', value: 95 },
-    { x: 'Mallas Ballet', y: 'Sin oferta', value: 35 },
-    { x: 'Zapatillas Jazz', y: 'En oferta', value: 105 },
-    { x: 'Zapatillas Jazz', y: 'Sin oferta', value: 25 },
-    { x: 'Tops Danza', y: 'En oferta', value: 75 },
-    { x: 'Tops Danza', y: 'Sin oferta', value: 40 },
-    { x: 'Faldas Ballet', y: 'En oferta', value: 90 },
-    { x: 'Faldas Ballet', y: 'Sin oferta', value: 30 },
-    { x: 'Accesorios', y: 'En oferta', value: 65 },
-    { x: 'Accesorios', y: 'Sin oferta', value: 35 }
+    { x: 'Leotardos Premium', y: 'Sin oferta', value: 35 },
+    { x: 'Mallas Ballet', y: 'En oferta', value: 92 },
+    { x: 'Mallas Ballet', y: 'Sin oferta', value: 28 },
+    { x: 'Zapatillas Jazz', y: 'En oferta', value: 78 },
+    { x: 'Zapatillas Jazz', y: 'Sin oferta', value: 22 },
+    { x: 'Tops Danza', y: 'En oferta', value: 65 },
+    { x: 'Tops Danza', y: 'Sin oferta', value: 25 },
+    { x: 'Faldas Ballet', y: 'En oferta', value: 88 },
+    { x: 'Faldas Ballet', y: 'Sin oferta', value: 32 },
+    { x: 'Accesorios', y: 'En oferta', value: 72 },
+    { x: 'Accesorios', y: 'Sin oferta', value: 18 }
   ]
 }]);
 
@@ -353,14 +406,10 @@ const chartOptions = {
   },
   heatmap: {
     xaxis: {
-      type: 'category',
-      categories: products,
-      title: {
-        text: 'Prendas'
-      },
+      type: "category",
       labels: {
         style: {
-          fontSize: '12px'
+          colors: '#666'
         }
       }
     },
@@ -393,6 +442,84 @@ const chartOptions = {
   }
 };
 
+// Actualizar las opciones del heatmap
+const heatmapOptions = {
+  chart: {
+    type: 'heatmap',
+    height: 350,
+    toolbar: {
+      show: false
+    }
+  },
+  xaxis: {
+    type: "category",
+    categories: products,
+    labels: {
+      style: {
+        colors: '#666',
+        fontSize: '12px'
+      }
+    }
+  },
+  yaxis: {
+    type: 'category',
+    categories: ['En oferta', 'Sin oferta'],
+    title: {
+      text: 'Estado'
+    },
+    labels: {
+      style: {
+        colors: '#666',
+        fontSize: '12px'
+      }
+    }
+  },
+  plotOptions: {
+    heatmap: {
+      colorScale: {
+        ranges: [
+          { from: 0, to: 30, color: '#607d8b' },
+          { from: 31, to: 70, color: '#ff5722' },
+          { from: 71, to: 100, color: '#e91e63' }
+        ]
+      },
+      distributed: true,
+      enableShades: true,
+      shadeIntensity: 0.5
+    }
+  },
+  dataLabels: {
+    enabled: true,
+    formatter: function(val: any) {
+      if (val && val.value) {
+        return val.value;
+      }
+      return '';
+    },
+    style: {
+      colors: ['#fff'],
+      fontSize: '12px',
+      fontWeight: 'bold'
+    }
+  },
+  tooltip: {
+    enabled: true,
+    y: {
+      formatter: function (val: string, opts: any) {
+        if (opts && opts.value) {
+          const percentage = Math.round((opts.value / 100) * 100);
+          return `<strong>${opts.value} ventas (${percentage}%)</strong><br>
+                 <span style='color:${opts.color}'>${val}</span>`;
+        }
+        return '';
+      }
+    }
+  },
+  legend: {
+    show: false
+  }
+};
+
 // Función para formatear moneda
 const formatCurrency = (value: number) => {
   return new Intl.NumberFormat('es-ES', {
@@ -403,56 +530,70 @@ const formatCurrency = (value: number) => {
 </script>
 
 <style scoped>
-.dashboard-grid {
-  height: 100%;
-  --ion-grid-padding: 8px;
-  --ion-grid-column-padding: 8px;
-}
-
-.dashboard-row {
-  margin-bottom: 16px;
-  height: calc(33.33vh - 16px);
-}
-
-.chart-box {
-  background: white;
-  border-radius: 12px;
-  padding: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+.dashboard-container {
   height: 100%;
   display: flex;
   flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.dashboard-row {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.chart-box {
+  flex: 1 1 45%;
+  min-width: 300px;
+  background: white;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
   border: 1px solid rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+  min-height: 300px;
 }
 
 .chart-box h3 {
-  margin: 0 0 8px 0;
+  margin: 0 0 4px 0;
   color: var(--ion-color-primary);
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 600;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
+  flex-shrink: 0;
 }
 
 .chart-box h3::before {
   content: '';
   display: inline-block;
-  width: 3px;
-  height: 16px;
+  width: 2px;
+  height: 12px;
   background: var(--ion-color-primary);
-  border-radius: 2px;
+  border-radius: 1px;
 }
 
 .categories-container {
   display: flex;
   gap: 1rem;
-  height: 100%;
+  width: 100%;
+  flex-wrap: wrap;
+  min-height: 0;
 }
 
-.categories-chart {
-  flex: 1;
-  min-width: 150px;
+.categories-chart,
+.categories-details {
+  flex: 1 1 45%;
+  min-width: 300px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -462,36 +603,37 @@ const formatCurrency = (value: number) => {
   flex: 1;
   display: flex;
   flex-direction: column;
-  min-width: 150px;
+  min-width: 120px;
+  overflow: auto;
 }
 
 .categories-list {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 
 .category-item {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr;
-  gap: 8px;
+  gap: 4px;
   align-items: center;
-  padding: 4px 8px;
+  padding: 2px 4px;
   background: rgba(0, 0, 0, 0.02);
-  border-radius: 6px;
-  font-size: 0.8rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
 }
 
 .category-info {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
   min-width: 0;
 }
 
 .color-dot {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
 }
 
@@ -504,13 +646,14 @@ const formatCurrency = (value: number) => {
 .category-item .value {
   font-weight: 600;
   text-align: right;
+  font-size: 0.7rem;
 }
 
 .category-item .growth {
   font-weight: 600;
-  padding: 2px 4px;
-  border-radius: 4px;
-  font-size: 0.75rem;
+  padding: 1px 2px;
+  border-radius: 2px;
+  font-size: 0.65rem;
   text-align: center;
 }
 
@@ -526,12 +669,70 @@ const formatCurrency = (value: number) => {
 
 @media (max-width: 768px) {
   .dashboard-row {
-    height: auto;
-    min-height: 300px;
+    grid-template-columns: 1fr;
+  }
+
+  .chart-box {
+    min-height: 250px;
+  }
+}
+@media (max-width: 1024px) {
+  .dashboard-row {
+    gap: 0.75rem;
   }
   
   .chart-box {
-    margin-bottom: 16px;
+    flex: 1 1 100%;
+    min-width: 100%;
+  }
+  
+  .categories-container {
+    flex-direction: column;
+  }
+  
+  .categories-chart,
+  .categories-details {
+    flex: 1 1 100%;
+    min-width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 0.5rem;
+  }
+  
+  .chart-box {
+    padding: 0.75rem;
+  }
+  
+  .chart-box h3 {
+    font-size: 1.1rem;
+  }
+  
+  .name {
+    font-size: 0.9rem;
+  }
+  
+  .value,
+  .growth {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .chart-box h3 {
+    font-size: 1rem;
+  }
+  
+  .name {
+    font-size: 0.85rem;
+  }
+  
+  .value,
+  .growth {
+    font-size: 0.8rem;
+    min-width: 70px;
   }
 }
 </style>

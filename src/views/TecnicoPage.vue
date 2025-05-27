@@ -63,6 +63,7 @@
                   <CircularStorageChart 
                     :storage-percentage="storageUsage"
                     :theme-color="'#ffd43b'"
+                    :total-capacity="10000"
                   />
                 </div>
               </div>
