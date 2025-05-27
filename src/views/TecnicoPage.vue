@@ -10,15 +10,10 @@
     </ion-header>
 
     <ion-content :fullscreen="true" class="technical-content">
-      <div class="technical-header">
-        <h1>Dashboard Técnico</h1>
-        <p>Monitoreo en tiempo real del rendimiento y salud del sistema</p>
-      </div>
-
       <ion-grid class="technical-grid">
         <!-- Fila 1: Tiempo de Respuesta y Usuarios Concurrentes -->
         <ion-row class="metrics-row">
-          <ion-col size="12" size-lg="6" class="chart-col">
+          <ion-col size="12" size-md="6" class="chart-col">
             <div class="chart-card">
               <div class="chart-card-header">
                 <div class="chart-card-title">Tiempo de Respuesta</div>
@@ -33,13 +28,10 @@
                   :chartOptions="chartOptions.line"
                 />
               </div>
-              <div class="chart-card-footer">
-                <p>Latencia promedio del servidor en los últimos 7 días</p>
-              </div>
             </div>
           </ion-col>
           
-          <ion-col size="12" size-lg="6" class="chart-col">
+          <ion-col size="12" size-md="6" class="chart-col">
             <div class="chart-card">
               <div class="chart-card-header">
                 <div class="chart-card-title">Usuarios Concurrentes</div>
@@ -54,16 +46,13 @@
                   :chartOptions="chartOptions.area"
                 />
               </div>
-              <div class="chart-card-footer">
-                <p>Picos de usuarios simultáneos por franja horaria</p>
-              </div>
             </div>
           </ion-col>
         </ion-row>
 
-        <!-- Fila 2: Uso de Almacenamiento y Errores -->
+        <!-- Fila 2: Almacenamiento y Errores -->
         <ion-row class="system-health-row">
-          <ion-col size="12" size-lg="4" class="chart-col">
+          <ion-col size="12" size-md="4" class="chart-col">
             <div class="chart-card">
               <div class="chart-card-header">
                 <div class="chart-card-title">Almacenamiento</div>
@@ -81,57 +70,8 @@
                       :colors="['#ffd43b']"
                       :chartOptions="{
                         ...chartOptions.gauge,
-                        plotOptions: {
-                          radialBar: {
-                            startAngle: -135,
-                            endAngle: 135,
-                            hollow: {
-                              size: '70%',
-                              background: '#fff',
-                              image: undefined,
-                              imageOffsetX: 0,
-                              imageOffsetY: 0,
-                              position: 'front',
-                              dropShadow: {
-                                enabled: true,
-                                top: 3,
-                                left: 0,
-                                blur: 4,
-                                opacity: 0.24
-                              }
-                            },
-                            track: {
-                              background: '#f1f1f1',
-                              strokeWidth: '97%',
-                              margin: 5,
-                              dropShadow: {
-                                enabled: true,
-                                top: 2,
-                                left: 0,
-                                blur: 4,
-                                opacity: 0.15
-                              }
-                            },
-                            dataLabels: {
-                              name: {
-                                show: true,
-                                fontSize: '16px',
-                                fontWeight: 600,
-                                offsetY: 0,
-                                color: '#333'
-                              },
-                              value: {
-                                show: true,
-                                fontSize: '28px',
-                                fontWeight: 700,
-                                offsetY: 0,
-                                color: '#333',
-                                formatter: function (val: number) {
-                                  return val + '%';
-                                }
-                              }
-                            }
-                          }
+                        chart: {
+                          height: 150
                         }
                       }"
                     />
@@ -141,57 +81,64 @@
                       <div class="storage-total">
                         <ion-icon :icon="hardwareChip" class="storage-icon"></ion-icon>
                         <div class="storage-info-text">
-                          <span class="label">Capacidad Total</span>
+                          <span class="label">Total</span>
                           <span class="value">{{ storageCapacity }} GB</span>
                         </div>
                       </div>
                       <div class="storage-used">
                         <ion-icon :icon="cloudUpload" class="storage-icon"></ion-icon>
                         <div class="storage-info-text">
-                          <span class="label">Espacio Usado</span>
+                          <span class="label">Usado</span>
                           <span class="value">{{ (storageCapacity * storageUsage / 100).toFixed(1) }} GB</span>
                         </div>
                       </div>
                       <div class="storage-free">
                         <ion-icon :icon="cloudDownload" class="storage-icon"></ion-icon>
                         <div class="storage-info-text">
-                          <span class="label">Espacio Libre</span>
+                          <span class="label">Libre</span>
                           <span class="value">{{ (storageCapacity * (100 - storageUsage) / 100).toFixed(1) }} GB</span>
                         </div>
                       </div>
                     </div>
                     <div class="storage-breakdown">
-                      <h4>Desglose por Tipo</h4>
-                      <div class="storage-items">
-                        <div v-for="item in storageData" :key="item.name" class="storage-item">
-                          <div class="storage-item-header">
-                            <div class="storage-item-info">
-                              <ion-icon :icon="item.icon" class="storage-item-icon" :style="{ color: item.color }"></ion-icon>
-                              <span class="name">{{ item.name }}</span>
-                            </div>
-                            <span class="growth" :class="{ 'positive': item.growth.startsWith('+'), 'negative': item.growth.startsWith('-') }">
-                              {{ item.growth }}
-                            </span>
-                          </div>
-                          <div class="storage-item-progress">
-                            <div class="progress-bar">
-                              <div class="progress-fill" :style="{ width: (item.value / storageCapacity * 100) + '%', backgroundColor: item.color }"></div>
-                            </div>
-                            <span class="value">{{ item.value }} GB</span>
-                          </div>
-                        </div>
-                      </div>
+                      <ApexMixedChart 
+                        :series="[{
+                          name: 'Almacenamiento',
+                          data: storageData.map(item => item.value)
+                        }]"
+                        type="donut"
+                        :colors="storageData.map(item => item.color)"
+                        :chartOptions="{
+                          ...chartOptions.donut,
+                          chart: {
+                            height: 150
+                          },
+                          labels: storageData.map(item => item.name),
+                          dataLabels: {
+                            enabled: true,
+                            formatter: function (val: number) {
+                              return val.toFixed(1) + ' GB';
+                            }
+                          },
+                          legend: {
+                            position: 'bottom',
+                            fontSize: '12px',
+                            markers: {
+                              width: 12,
+                              height: 12,
+                              radius: 6
+                            }
+                          }
+                        }"
+                      />
                     </div>
                   </div>
                 </div>
               </div>
-              <div class="chart-card-footer">
-                <p>Espacio de almacenamiento utilizado: {{ storageUsage }}%</p>
-              </div>
             </div>
           </ion-col>
           
-          <ion-col size="12" size-lg="8" class="chart-col">
+          <ion-col size="12" size-md="8" class="chart-col">
             <div class="chart-card">
               <div class="chart-card-header">
                 <div class="chart-card-title">Distribución de Errores</div>
@@ -207,19 +154,11 @@
                   :colors="errorTypesSeries.map((e: ErrorData) => e.color)"
                   :chartOptions="{
                     ...chartOptions.bar,
-                    xaxis: {
-                      categories: errorTypesSeries.map((e: ErrorData) => e.type),
-                      labels: {
-                        style: {
-                          fontSize: '12px'
-                        }
-                      }
+                    chart: {
+                      height: 200
                     }
                   }"
                 />
-              </div>
-              <div class="chart-card-footer">
-                <p>Distribución de errores por tipo y severidad</p>
               </div>
             </div>
           </ion-col>
@@ -240,18 +179,11 @@
                   :colors="apiRequestsSeries.map((s: ApiRequestData) => s.color)"
                   :chartOptions="{
                     ...chartOptions.line,
-                    stroke: {
-                      curve: 'smooth',
-                      width: 2
-                    },
-                    markers: {
-                      size: 4
+                    chart: {
+                      height: 200
                     }
                   }"
                 />
-              </div>
-              <div class="chart-card-footer">
-                <p>Tráfico de llamadas API por endpoint</p>
               </div>
             </div>
           </ion-col>
@@ -373,6 +305,25 @@ interface ChartOptions {
         borderRadius: number;
         horizontal: boolean;
         columnWidth: string;
+      };
+    };
+  };
+  donut: {
+    chart: {
+      height: number;
+    };
+    labels: string[];
+    dataLabels: {
+      enabled: boolean;
+      formatter: (val: number) => string;
+    };
+    legend: {
+      position: string;
+      fontSize: string;
+      markers: {
+        width: number;
+        height: number;
+        radius: number;
       };
     };
   };
@@ -587,6 +538,27 @@ const chartOptions: ChartOptions = {
         columnWidth: '70%'
       }
     }
+  },
+  donut: {
+    chart: {
+      height: 150
+    },
+    labels: storageData.value.map(item => item.name),
+    dataLabels: {
+      enabled: true,
+      formatter: function (val: number) {
+        return val.toFixed(1) + ' GB';
+      }
+    },
+    legend: {
+      position: 'bottom',
+      fontSize: '12px',
+      markers: {
+        width: 12,
+        height: 12,
+        radius: 6
+      }
+    }
   }
 };
 
@@ -599,259 +571,80 @@ const formatNumber = (value: number) => {
 <style scoped>
 .technical-content {
   background: var(--ion-color-light);
-  padding: 1.5rem;
-  min-height: 100vh;
+  padding: 8px;
+  height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
 .technical-grid {
-  --ion-grid-padding: 0;
-  width: 100%;
-  flex-grow: 1;
-}
-
-.technical-header {
-  margin-bottom: 2rem;
-  padding: 1.5rem;
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.technical-header h1 {
-  font-size: 1.75rem;
-  color: var(--ion-color-primary);
-  font-weight: 600;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.technical-header h1::before {
-  content: '';
-  display: inline-block;
-  width: 4px;
-  height: 24px;
-  background: var(--ion-color-primary);
-  border-radius: 2px;
-}
-
-.technical-header p {
-  color: var(--ion-color-medium);
-  font-size: 1rem;
-  margin: 0.75rem 0 0;
-  padding-left: 16px;
+  --ion-grid-padding: 8px;
+  --ion-grid-column-padding: 8px;
+  height: 100%;
 }
 
 .metrics-row,
 .system-health-row,
 .api-traffic-row {
-  min-height: 350px;
-  gap: 1.5rem;
-  margin-bottom: 1.5rem;
-}
-
-.api-traffic-row {
-  min-height: 300px;
-  margin-top: 1.5rem;
+  height: calc(33.33vh - 16px);
+  margin-bottom: 16px;
 }
 
 .chart-col {
-  position: relative;
-  padding: 0.75rem;
-  transition: all 0.3s ease;
-  border-radius: 16px;
-  background: white;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.chart-col:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  height: 100%;
+  padding: 8px;
 }
 
 .chart-card {
-  width: 100%;
-  height: 100%;
   background: white;
-  border-radius: 16px;
-  padding: 1.5rem;
+  border-radius: 12px;
+  padding: 12px;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .chart-card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-bottom: 1rem;
+  padding-bottom: 8px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .chart-card-title {
-  font-size: 1.25rem;
+  font-size: 1rem;
   font-weight: 600;
   color: var(--ion-color-medium-shade);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.chart-card-title::before {
-  content: '';
-  display: inline-block;
-  width: 4px;
-  height: 20px;
-  background: var(--ion-color-primary);
-  border-radius: 2px;
 }
 
 .chart-card-icon {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   color: var(--ion-color-primary);
-  padding: 8px;
+  padding: 6px;
   background: rgba(var(--ion-color-primary-rgb), 0.1);
-  border-radius: 8px;
+  border-radius: 6px;
 }
 
 .chart-card-content {
-  flex-grow: 1;
-  position: relative;
-  min-height: 250px;
-}
-
-.chart-card-footer {
-  padding-top: 1rem;
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.chart-card-footer p {
-  margin: 0;
-  font-size: 0.875rem;
-  color: var(--ion-color-medium);
+  flex: 1;
+  min-height: 0;
   display: flex;
   align-items: center;
-  gap: 6px;
-}
-
-.chart-card-footer p::before {
-  content: 'ℹ️';
-  font-size: 1rem;
-}
-
-/* Estilos para los gráficos */
-:deep(.apexcharts-canvas) {
-  background: transparent !important;
-}
-
-:deep(.apexcharts-tooltip) {
-  background: rgba(255, 255, 255, 0.95) !important;
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(0, 0, 0, 0.1) !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
-  border-radius: 8px !important;
-}
-
-:deep(.apexcharts-legend) {
-  padding: 8px !important;
-  background: rgba(255, 255, 255, 0.8) !important;
-  backdrop-filter: blur(4px);
-  border-radius: 8px !important;
-}
-
-:deep(.apexcharts-grid line) {
-  stroke: rgba(0, 0, 0, 0.05) !important;
-}
-
-:deep(.apexcharts-xaxis line),
-:deep(.apexcharts-yaxis line) {
-  stroke: rgba(0, 0, 0, 0.1) !important;
-}
-
-:deep(.apexcharts-text) {
-  font-family: inherit !important;
-}
-
-/* Animaciones */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.chart-col {
-  animation: fadeInUp 0.6s ease-out forwards;
-}
-
-/* Responsive design */
-@media (max-width: 991px) {
-  .chart-col {
-    padding: 0.5rem;
-  }
-  
-  .metrics-row,
-  .system-health-row,
-  .api-traffic-row {
-    min-height: auto;
-    gap: 1rem;
-  }
-  
-  .chart-card {
-    padding: 1rem;
-  }
-  
-  .chart-card-title {
-    font-size: 1.1rem;
-  }
-  
-  .chart-card-content {
-    min-height: 200px;
-  }
-}
-
-/* Mejoras de accesibilidad */
-[class*="-row"] {
-  scroll-margin-top: 80px;
-}
-
-/* Gradientes sutiles */
-.chart-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  border-radius: 16px;
-  background: linear-gradient(135deg, rgba(32, 201, 151, 0.03), rgba(32, 201, 151, 0.01));
-  pointer-events: none;
+  justify-content: center;
 }
 
 .storage-info {
   display: flex;
-  gap: 1.5rem;
-  align-items: center;
+  gap: 1rem;
   height: 100%;
-  padding: 1rem;
-  max-height: 400px;
-  overflow: hidden;
 }
 
 .storage-gauge {
   flex: 1;
-  min-width: 200px;
-  max-width: 40%;
-  position: relative;
+  min-width: 150px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -861,30 +654,14 @@ const formatNumber = (value: number) => {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  max-width: 60%;
-  overflow-y: auto;
-  padding-right: 0.5rem;
-}
-
-.storage-details::-webkit-scrollbar {
-  width: 6px;
-}
-
-.storage-details::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 3px;
-}
-
-.storage-details::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 3px;
+  gap: 0.75rem;
+  min-width: 200px;
 }
 
 .storage-summary {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 
 .storage-total,
@@ -892,27 +669,18 @@ const formatNumber = (value: number) => {
 .storage-free {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem;
+  gap: 0.5rem;
+  padding: 0.5rem;
   background: rgba(0, 0, 0, 0.02);
-  border-radius: 12px;
-  transition: all 0.3s ease;
-  min-height: 60px;
-}
-
-.storage-total:hover,
-.storage-used:hover,
-.storage-free:hover {
-  background: rgba(0, 0, 0, 0.04);
-  transform: translateY(-2px);
+  border-radius: 8px;
 }
 
 .storage-icon {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   color: var(--ion-color-primary);
-  padding: 0.5rem;
+  padding: 0.25rem;
   background: rgba(var(--ion-color-primary-rgb), 0.1);
-  border-radius: 8px;
+  border-radius: 6px;
 }
 
 .storage-info-text {
@@ -923,7 +691,7 @@ const formatNumber = (value: number) => {
 }
 
 .storage-info-text .label {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: var(--ion-color-medium);
   white-space: nowrap;
   overflow: hidden;
@@ -931,7 +699,7 @@ const formatNumber = (value: number) => {
 }
 
 .storage-info-text .value {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 600;
   color: var(--ion-color-dark);
   white-space: nowrap;
@@ -940,124 +708,35 @@ const formatNumber = (value: number) => {
 }
 
 .storage-breakdown {
-  background: rgba(0, 0, 0, 0.02);
-  border-radius: 12px;
-  padding: 1rem;
   flex: 1;
   min-height: 0;
   display: flex;
-  flex-direction: column;
-}
-
-.storage-breakdown h4 {
-  margin: 0 0 0.75rem 0;
-  font-size: 0.9rem;
-  color: var(--ion-color-medium);
-  position: sticky;
-  top: 0;
-  background: rgba(0, 0, 0, 0.02);
-  padding: 0.5rem 0;
-  z-index: 1;
-}
-
-.storage-items {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  overflow-y: auto;
-  padding-right: 0.5rem;
-}
-
-.storage-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  min-height: 50px;
-}
-
-.storage-item-header {
-  display: flex;
-  justify-content: space-between;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: center;
 }
 
-.storage-item-info {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  min-width: 0;
-}
+@media (max-width: 768px) {
+  .metrics-row,
+  .system-health-row,
+  .api-traffic-row {
+    height: auto;
+    min-height: 300px;
+  }
 
-.storage-item .name {
-  font-size: 0.85rem;
-  color: var(--ion-color-dark);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+  .chart-col {
+    margin-bottom: 16px;
+  }
 
-.storage-item-progress {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.progress-bar {
-  flex: 1;
-  height: 6px;
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 3px;
-  overflow: hidden;
-  min-width: 0;
-}
-
-.storage-item .value {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--ion-color-medium);
-  min-width: 60px;
-  text-align: right;
-  white-space: nowrap;
-}
-
-.growth {
-  font-size: 0.85rem;
-  font-weight: 600;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-}
-
-.growth.positive {
-  background: rgba(76, 175, 80, 0.1);
-  color: #4caf50;
-}
-
-.growth.negative {
-  background: rgba(244, 67, 54, 0.1);
-  color: #f44336;
-}
-
-@media (max-width: 991px) {
   .storage-info {
     flex-direction: column;
-    gap: 1.5rem;
-    max-height: none;
-  }
-
-  .storage-gauge {
-    width: 100%;
-    max-width: 100%;
-    min-height: 250px;
-  }
-
-  .storage-details {
-    width: 100%;
-    max-width: 100%;
   }
 
   .storage-summary {
     grid-template-columns: 1fr;
+  }
+
+  .storage-breakdown {
+    min-height: 200px;
   }
 }
 </style>

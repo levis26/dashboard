@@ -16,11 +16,10 @@
         </ion-toolbar>
       </ion-header>
 
-      <!-- Grid principal del Dashboard -->
       <ion-grid class="dashboard-grid">
-        <!-- Fila 1: 2 Columnas -->
+        <!-- Fila 1: Productos y Clientes -->
         <ion-row class="dashboard-row">
-          <ion-col size="12" size-lg="6">
+          <ion-col size="12" size-md="6">
             <div class="chart-box">
               <h3>Productos más vendidos</h3>
               <ApexMixedChart 
@@ -31,7 +30,7 @@
               />
             </div>
           </ion-col>
-          <ion-col size="12" size-lg="6">
+          <ion-col size="12" size-md="6">
             <div class="chart-box">
               <h3>Clientes más frecuentes</h3>
               <ApexMixedChart 
@@ -43,9 +42,9 @@
           </ion-col>
         </ion-row>
 
-        <!-- Fila 2: 2 Columnas -->
+        <!-- Fila 2: Ventas y Categorías -->
         <ion-row class="dashboard-row">
-          <ion-col size="12" size-lg="8">
+          <ion-col size="12" size-md="8">
             <div class="chart-box">
               <h3>Ventas mensuales</h3>
               <ApexMixedChart 
@@ -57,7 +56,7 @@
               />
             </div>
           </ion-col>
-          <ion-col size="12" size-lg="4">
+          <ion-col size="12" size-md="4">
             <div class="chart-box">
               <h3>Categorías más vendidas</h3>
               <div class="categories-container">
@@ -67,98 +66,21 @@
                     type="donut"
                     :colors="categoriesData.map(c => c.color)"
                     :chartOptions="{
-                      labels: categoriesLabels,
-                      dataLabels: {
-                        enabled: true,
-                        style: {
-                          fontSize: '12px',
-                          fontWeight: 600
-                        },
-                        formatter: function (val: number) {
-                          return val + '%';
-                        }
-                      },
-                      legend: {
-                        position: 'bottom',
-                        fontSize: '12px',
-                        horizontalAlign: 'center',
-                        markers: {
-                          width: 12,
-                          height: 12,
-                          radius: 6
-                        },
-                        itemMargin: {
-                          horizontal: 10,
-                          vertical: 5
-                        }
-                      },
-                      plotOptions: {
-                        pie: {
-                          donut: {
-                            size: '65%',
-                            labels: {
-                              show: true,
-                              name: {
-                                show: true,
-                                fontSize: '16px',
-                                fontWeight: 600,
-                                offsetY: -10
-                              },
-                              value: {
-                                show: true,
-                                fontSize: '24px',
-                                fontWeight: 700,
-                                offsetY: 5,
-                                formatter: function (val: number) {
-                                  return val + '%';
-                                }
-                              },
-                              total: {
-                                show: true,
-                                label: 'Total',
-                                fontSize: '16px',
-                                fontWeight: 600,
-                                formatter: function (w: any) {
-                                  return w.globals.seriesTotals.reduce((a: number, b: number) => a + b, 0) + '%';
-                                }
-                              }
-                            }
-                          }
-                        }
-                      },
+                      ...chartOptions.donut,
                       chart: {
-                        height: 350
-                      },
-                      stroke: {
-                        width: 0
-                      },
-                      responsive: [{
-                        breakpoint: 480,
-                        options: {
-                          chart: {
-                            height: 300
-                          },
-                          legend: {
-                            fontSize: '10px'
-                          }
-                        }
-                      }]
+                        height: 200
+                      }
                     }"
                   />
                 </div>
                 <div class="categories-details">
-                  <div class="categories-header">
-                    <span class="label">Categoría</span>
-                    <span class="label">Ventas</span>
-                    <span class="label">Crecimiento</span>
-                  </div>
                   <div class="categories-list">
                     <div v-for="category in categoriesData" :key="category.name" class="category-item">
                       <div class="category-info">
                         <div class="color-dot" :style="{ backgroundColor: category.color }"></div>
                         <span class="name">{{ category.name }}</span>
                       </div>
-                      <span class="value">{{ category.items }} items</span>
+                      <span class="value">{{ category.items }}</span>
                       <span class="growth" :class="{ 'positive': category.growth.startsWith('+'), 'negative': category.growth.startsWith('-') }">
                         {{ category.growth }}
                       </span>
@@ -170,9 +92,9 @@
           </ion-col>
         </ion-row>
 
-        <!-- Fila 3: 2 Columnas -->
+        <!-- Fila 3: Ofertas y Expansión -->
         <ion-row class="dashboard-row">
-          <ion-col size="12" size-lg="6">
+          <ion-col size="12" size-md="6">
             <div class="chart-box">
               <h3>Productos en oferta vs. sin oferta</h3>
               <ApexMixedChart 
@@ -183,7 +105,7 @@
               />
             </div>
           </ion-col>
-          <ion-col size="12" size-lg="6">
+          <ion-col size="12" size-md="6">
             <div class="chart-box">
               <h3>Expansión Kinisi en Europa</h3>
               <EchartsMap 
@@ -482,39 +404,31 @@ const formatCurrency = (value: number) => {
 
 <style scoped>
 .dashboard-grid {
-  margin-top: 16px;
   height: 100%;
-  --ion-grid-padding: 16px;
-  --ion-grid-column-padding: 16px;
+  --ion-grid-padding: 8px;
+  --ion-grid-column-padding: 8px;
 }
 
 .dashboard-row {
-  margin-bottom: 24px;
-  height: auto;
+  margin-bottom: 16px;
+  height: calc(33.33vh - 16px);
 }
 
 .chart-box {
   background: white;
-  border-radius: 16px;
-  padding: 20px;
+  border-radius: 12px;
+  padding: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   height: 100%;
   display: flex;
   flex-direction: column;
-  min-height: 300px;
-  transition: all 0.3s ease;
   border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-.chart-box:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-}
-
 .chart-box h3 {
-  margin: 0 0 1.5rem 0;
+  margin: 0 0 8px 0;
   color: var(--ion-color-primary);
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 600;
   display: flex;
   align-items: center;
@@ -524,111 +438,21 @@ const formatCurrency = (value: number) => {
 .chart-box h3::before {
   content: '';
   display: inline-block;
-  width: 4px;
-  height: 20px;
+  width: 3px;
+  height: 16px;
   background: var(--ion-color-primary);
   border-radius: 2px;
 }
 
-/* Ajustes responsivos */
-@media (min-width: 992px) {
-  .dashboard-row {
-    height: 450px;
-  }
-  
-  .chart-box {
-    min-height: 400px;
-  }
-}
-
-@media (max-width: 991px) {
-  .dashboard-row {
-    height: auto;
-  }
-  
-  .chart-box {
-    margin-bottom: 24px;
-    min-height: 350px;
-  }
-}
-
-/* Animaciones */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.chart-box {
-  animation: fadeIn 0.5s ease-out forwards;
-}
-
-/* Estilos para el contenido del gráfico */
-:deep(.apexcharts-canvas) {
-  background: transparent !important;
-}
-
-:deep(.apexcharts-tooltip) {
-  background: rgba(255, 255, 255, 0.95) !important;
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(0, 0, 0, 0.1) !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
-  border-radius: 8px !important;
-}
-
-:deep(.apexcharts-legend) {
-  padding: 8px !important;
-  background: rgba(255, 255, 255, 0.8) !important;
-  backdrop-filter: blur(4px);
-  border-radius: 8px !important;
-}
-
-:deep(.apexcharts-grid line) {
-  stroke: rgba(0, 0, 0, 0.05) !important;
-}
-
-:deep(.apexcharts-xaxis line),
-:deep(.apexcharts-yaxis line) {
-  stroke: rgba(0, 0, 0, 0.1) !important;
-}
-
-:deep(.apexcharts-text) {
-  font-family: inherit !important;
-}
-
-/* Estilos para el mapa */
-:deep(.echarts-map) {
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-:deep(.echarts-map-tooltip) {
-  background: rgba(255, 255, 255, 0.95) !important;
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(0, 0, 0, 0.1) !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
-  border-radius: 8px !important;
-  padding: 12px !important;
-}
-
 .categories-container {
   display: flex;
-  gap: 1.5rem;
+  gap: 1rem;
   height: 100%;
-  max-height: 400px;
-  overflow: hidden;
 }
 
 .categories-chart {
   flex: 1;
-  min-width: 250px;
-  max-width: 50%;
+  min-width: 150px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -638,94 +462,56 @@ const formatCurrency = (value: number) => {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  min-width: 200px;
-  max-width: 50%;
-  overflow-y: auto;
-  padding-right: 0.5rem;
-}
-
-.categories-details::-webkit-scrollbar {
-  width: 6px;
-}
-
-.categories-details::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 3px;
-}
-
-.categories-details::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 3px;
-}
-
-.categories-header {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
-  gap: 0.75rem;
-  padding: 0.5rem;
-  background: rgba(0, 0, 0, 0.02);
-  border-radius: 8px;
-  font-weight: 600;
-  color: var(--ion-color-medium);
-  position: sticky;
-  top: 0;
-  z-index: 1;
+  min-width: 150px;
 }
 
 .categories-list {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 4px;
 }
 
 .category-item {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr;
-  gap: 0.75rem;
+  gap: 8px;
   align-items: center;
-  padding: 0.75rem;
+  padding: 4px 8px;
   background: rgba(0, 0, 0, 0.02);
-  border-radius: 8px;
-  transition: all 0.3s ease;
-  min-height: 40px;
-}
-
-.category-item:hover {
-  background: rgba(0, 0, 0, 0.04);
-  transform: translateX(4px);
+  border-radius: 6px;
+  font-size: 0.8rem;
 }
 
 .category-info {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 4px;
   min-width: 0;
 }
 
-.category-info .name {
-  font-size: 0.85rem;
+.color-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.category-item .name {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.color-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-}
-
 .category-item .value {
   font-weight: 600;
-  color: var(--ion-color-dark);
+  text-align: right;
 }
 
 .category-item .growth {
   font-weight: 600;
-  padding: 0.25rem 0.5rem;
+  padding: 2px 4px;
   border-radius: 4px;
-  font-size: 0.85rem;
+  font-size: 0.75rem;
+  text-align: center;
 }
 
 .growth.positive {
@@ -738,21 +524,14 @@ const formatCurrency = (value: number) => {
   color: #f44336;
 }
 
-@media (max-width: 991px) {
-  .categories-container {
-    flex-direction: column;
-    gap: 1rem;
-    max-height: none;
-  }
-
-  .categories-chart,
-  .categories-details {
-    width: 100%;
-    max-width: 100%;
-  }
-
-  .categories-chart {
+@media (max-width: 768px) {
+  .dashboard-row {
+    height: auto;
     min-height: 300px;
+  }
+  
+  .chart-box {
+    margin-bottom: 16px;
   }
 }
 </style>
