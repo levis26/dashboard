@@ -36,7 +36,7 @@
               <h3>Clientes más frecuentes</h3>
               <ApexMixedChart 
                 :series="topCustomersSeries" 
-                type="bar"
+                type="area"
                 :colors="['#2196f3']"
               />
             </div>
@@ -53,6 +53,7 @@
                 type="line"
                 :colors="['#ff9800']"
                 yTitle="€"
+                :strokeWidth="[3]"
               />
             </div>
           </ion-col>
@@ -61,8 +62,39 @@
               <h3>Categorías más vendidas</h3>
               <ApexMixedChart 
                 :series="categoriesSeries" 
-                type="pie"
+                type="donut"
                 :colors="['#e91e63', '#9c27b0', '#3f51b5', '#2196f3', '#009688', '#ff5722']"
+                :chartOptions="{
+                  labels: categoriesLabels,
+                  dataLabels: {
+                    enabled: true,
+                    style: {
+                      fontSize: '12px'
+                    },
+                    formatter: function (val) {
+                      return val + '%';
+                    }
+                  },
+                  legend: {
+                    position: 'bottom',
+                    fontSize: '12px',
+                    horizontalAlign: 'center'
+                  },
+                  chart: {
+                    height: 300
+                  },
+                  responsive: [{
+                    breakpoint: 480,
+                    options: {
+                      chart: {
+                        height: 250
+                      },
+                      legend: {
+                        fontSize: '10px'
+                      }
+                    }
+                  }]
+                }"
               />
             </div>
           </ion-col>
@@ -74,10 +106,49 @@
             <div class="chart-box">
               <h3>Productos en oferta vs. sin oferta</h3>
               <ApexMixedChart 
-                :series="discountComparisonSeries" 
-                type="bar"
-                :colors="['#ff5722', '#607d8b']"
-                yTitle="ventas"
+                :series="discountComparisonSeries"
+                type="heatmap"
+                :colors="['#607d8b', '#ff5722']"
+                :chartOptions="{
+                  xaxis: {
+                    type: 'category',
+                    categories: products,
+                    title: {
+                      text: 'Prendas'
+                    },
+                    labels: {
+                      style: {
+                        fontSize: '12px'
+                      }
+                    }
+                  },
+                  yaxis: {
+                    type: 'category',
+                    categories: ['En oferta', 'Sin oferta'],
+                    title: {
+                      text: 'Estado'
+                    }
+                  },
+                  plotOptions: {
+                    heatmap: {
+                      colorScale: {
+                        ranges: [
+                          { from: 0, to: 20, color: '#607d8b' },
+                          { from: 21, to: 60, color: '#ff5722' },
+                          { from: 61, to: 100, color: '#e91e63' }
+                        ]
+                      }
+                    }
+                  },
+                  tooltip: {
+                    y: {
+                      formatter: function (val, opts) {
+                        return `<strong>${val} ventas</strong><br>
+                               <span style='color:${opts.color}'>${opts.seriesName}</span>`;
+                      }
+                    }
+                  }
+                }"
               />
             </div>
           </ion-col>
@@ -134,21 +205,44 @@ const monthlySalesSeries = ref([{
   ]
 }]);
 
-const categoriesSeries = ref([
-  { name: 'Hombres', data: 35 },
-  { name: 'Mujeres', data: 25 },
-  { name: 'Camisetas', data: 20 },
-  { name: 'Pantalones', data: 15 },
-  { name: 'Vestidos', data: 10 },
-  { name: 'Sombreros', data: 5 }
+const categoriesSeries = ref([35, 25, 20, 15, 10, 5]);
+const categoriesLabels = ref(['Hombres', 'Mujeres', 'Camisetas', 'Pantalones', 'Vestidos', 'Sombreros']);
+
+const products = ref([
+  'Camiseta Basic',
+  'Pantalón Jogger',
+  'Chaqueta Denim',
+  'Vestido Midi',
+  'Zapatillas Urban'
+]);
+
+const discountComparisonData = ref([
+  { x: 'En oferta', y: 'Camiseta Basic', z: 65 },
+  { x: 'En oferta', y: 'Pantalón Jogger', z: 59 },
+  { x: 'En oferta', y: 'Chaqueta Denim', z: 80 },
+  { x: 'En oferta', y: 'Vestido Midi', z: 81 },
+  { x: 'En oferta', y: 'Zapatillas Urban', z: 56 },
+  { x: 'Sin oferta', y: 'Camiseta Basic', z: 35 },
+  { x: 'Sin oferta', y: 'Pantalón Jogger', z: 41 },
+  { x: 'Sin oferta', y: 'Chaqueta Denim', z: 20 },
+  { x: 'Sin oferta', y: 'Vestido Midi', z: 19 },
+  { x: 'Sin oferta', y: 'Zapatillas Urban', z: 44 }
 ]);
 
 const discountComparisonSeries = ref([{
-  name: 'En oferta',
-  data: [65, 59, 80, 81, 56]
-}, {
-  name: 'Sin oferta',
-  data: [35, 41, 20, 19, 44]
+  name: 'Ventas',
+  data: [
+    { x: 'Camiseta Basic', y: 65, z: 1 },
+    { x: 'Pantalón Jogger', y: 59, z: 2 },
+    { x: 'Chaqueta Denim', y: 80, z: 3 },
+    { x: 'Vestido Midi', y: 81, z: 4 },
+    { x: 'Zapatillas Urban', y: 56, z: 5 },
+    { x: 'Camiseta Basic', y: 35, z: 1 },
+    { x: 'Pantalón Jogger', y: 41, z: 2 },
+    { x: 'Chaqueta Denim', y: 20, z: 3 },
+    { x: 'Vestido Midi', y: 19, z: 4 },
+    { x: 'Zapatillas Urban', y: 44, z: 5 }
+  ]
 }]);
 
 const expansionData = ref([

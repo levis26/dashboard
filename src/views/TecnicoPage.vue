@@ -100,9 +100,17 @@ interface ChartDataPoint {
 
 const responseTimeSeries = ref<ChartDataPoint[]>([
   { x: '09:00', y: 120 },
+  { x: '10:00', y: 115 },
+  { x: '11:00', y: 110 },
   { x: '12:00', y: 95 },
-  { x: '15:00', y: 110 },
+  { x: '13:00', y: 105 },
+  { x: '14:00', y: 110 },
+  { x: '15:00', y: 115 },
+  { x: '16:00', y: 120 },
+  { x: '17:00', y: 115 },
   { x: '18:00', y: 85 },
+  { x: '19:00', y: 90 },
+  { x: '20:00', y: 85 },
   { x: '21:00', y: 75 }
 ]);
 
@@ -111,21 +119,30 @@ const concurrentUsersSeries = ref<ChartDataPoint[]>([
   { x: 'Martes', y: 230 },
   { x: 'Miércoles', y: 180 },
   { x: 'Jueves', y: 210 },
-  { x: 'Viernes', y: 190 }
+  { x: 'Viernes', y: 190 },
+  { x: 'Sábado', y: 160 },
+  { x: 'Domingo', y: 140 }
 ]);
 
 const errorTypesSeries = ref([
-  { type: '404', count: 15, severity: 'medium' },
-  { type: '500', count: 8, severity: 'high' },
-  { type: 'Auth', count: 12, severity: 'high' },
-  { type: 'DB', count: 5, severity: 'critical' }
+  { type: '404 - Página no encontrada', count: 15, severity: 'medium', color: '#f06595' },
+  { type: '500 - Error interno', count: 8, severity: 'high', color: '#ff6b6b' },
+  { type: 'Autenticación', count: 12, severity: 'high', color: '#cc5de8' },
+  { type: 'Base de datos', count: 5, severity: 'critical', color: '#845ef7' },
+  { type: 'Timeout', count: 3, severity: 'medium', color: '#4dabf7' },
+  { type: 'Validación', count: 7, severity: 'low', color: '#20c997' }
 ]);
 
 const storageUsage = ref(82.5);
 const storageCapacity = ref(128);
 
 const apiRequestsSeries = ref({
-  endpoints: ['/login', '/cart', '/search', '/products'],
+  endpoints: [
+    { name: 'Autenticación', path: '/login', color: '#20c997' },
+    { name: 'Carrito', path: '/cart', color: '#94d82d' },
+    { name: 'Búsqueda', path: '/search', color: '#fcc419' },
+    { name: 'Productos', path: '/products', color: '#ff922b' }
+  ],
   data: [2450, 1820, 3150, 2780]
 });
 </script>

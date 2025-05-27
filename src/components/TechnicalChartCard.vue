@@ -3,25 +3,36 @@
       <div class="card-header">
         <ion-icon :icon="icon" class="card-icon"></ion-icon>
         <h3>{{ title }}</h3>
-        <ion-badge v-if="infoText" color="medium" class="info-badge">
-          <ion-icon :icon="informationCircle"></ion-icon>
-        </ion-badge>
+        <div class="header-actions">
+          <ion-badge v-if="infoText" color="medium" class="info-badge">
+            <ion-icon :icon="informationCircle"></ion-icon>
+          </ion-badge>
+          <ion-button fill="clear" size="small" @click="toggleRealTime">
+            <ion-icon :icon="realTime ? pause : play" class="action-icon"></ion-icon>
+          </ion-button>
+        </div>
       </div>
-      <ApexMixedChart 
-        :series="series" 
-        :type="type" 
-        :colors="colors" 
-        :y-title="yTitle"
-      />
+      <div class="chart-container">
+        <ApexMixedChart 
+          :series="series" 
+          :type="type" 
+          :colors="colors" 
+          :y-title="yTitle"
+          :chartOptions="chartOptions"
+        />
+        <div v-if="infoText" class="info-tooltip">
+          {{ infoText }}
+        </div>
+      </div>
     </div>
   </template>
-  
+
   <script setup lang="ts">
-  import { defineProps } from 'vue';
+  import { defineProps, ref, computed } from 'vue';
   import ApexMixedChart from '@/components/ApexMixedChart.vue';
-  import { informationCircle } from 'ionicons/icons';
+  import { informationCircle, pause, play } from 'ionicons/icons';
   
-  defineProps<{
+  const props = defineProps<{
     title: string;
     icon: string;
     series: any[];
@@ -30,25 +41,84 @@
     yTitle?: string;
     infoText?: string;
   }>();
+
+  const realTime = ref(true);
+
+  const chartOptions = computed(() => ({
+    animations: {
+      enabled: true,
+      easing: 'easeinout',
+      speed: 800
+    },
+    markers: {
+      size: 4,
+      hover: {
+        size: 6
+      }
+    },
+    tooltip: {
+      enabled: true,
+      followCursor: true
+    }
+  }));
+
+  const toggleRealTime = () => {
+    realTime.value = !realTime.value;
+  };
   </script>
-  
+
   <style scoped>
   .technical-chart-card {
     background: white;
     border-radius: 12px;
     padding: 1rem;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
-  
+
+  .technical-chart-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+
   .card-header {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 0.5rem;
     margin-bottom: 1rem;
   }
-  
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
   .card-icon {
     font-size: 1.5rem;
     color: var(--ion-color-primary);
+  }
+
+  .action-icon {
+    font-size: 1.2rem;
+  }
+
+  .chart-container {
+    position: relative;
+    height: 100%;
+  }
+
+  .info-tooltip {
+    position: absolute;
+    bottom: -2rem;
+    left: 0;
+    right: 0;
+    padding: 0.5rem;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    text-align: center;
   }
   </style>
