@@ -58,7 +58,27 @@
     },
     tooltip: {
       enabled: true,
-      followCursor: true
+      followCursor: true,
+      y: {
+        formatter: function (val: number) {
+          return val + (props.yTitle ? ' ' + props.yTitle : '');
+        }
+      }
+    },
+    xaxis: {
+      type: 'category',
+      labels: {
+        rotate: -45,
+        rotateAlways: true
+      },
+      title: {
+        text: props.yTitle
+      }
+    },
+    yaxis: {
+      title: {
+        text: props.yTitle
+      }
     }
   }));
 

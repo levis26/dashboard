@@ -98,30 +98,40 @@ interface ChartDataPoint {
   y: number;
 }
 
-const responseTimeSeries = ref<ChartDataPoint[]>([
-  { x: '09:00', y: 120 },
-  { x: '10:00', y: 115 },
-  { x: '11:00', y: 110 },
-  { x: '12:00', y: 95 },
-  { x: '13:00', y: 105 },
-  { x: '14:00', y: 110 },
-  { x: '15:00', y: 115 },
-  { x: '16:00', y: 120 },
-  { x: '17:00', y: 115 },
-  { x: '18:00', y: 85 },
-  { x: '19:00', y: 90 },
-  { x: '20:00', y: 85 },
-  { x: '21:00', y: 75 }
+const responseTimeSeries = ref([
+  {
+    name: 'Latencia',
+    data: [
+      { x: '09:00', y: 120 },
+      { x: '10:00', y: 115 },
+      { x: '11:00', y: 110 },
+      { x: '12:00', y: 95 },
+      { x: '13:00', y: 105 },
+      { x: '14:00', y: 110 },
+      { x: '15:00', y: 115 },
+      { x: '16:00', y: 120 },
+      { x: '17:00', y: 115 },
+      { x: '18:00', y: 85 },
+      { x: '19:00', y: 90 },
+      { x: '20:00', y: 85 },
+      { x: '21:00', y: 75 }
+    ]
+  }
 ]);
 
-const concurrentUsersSeries = ref<ChartDataPoint[]>([
-  { x: 'Lunes', y: 150 },
-  { x: 'Martes', y: 230 },
-  { x: 'Miércoles', y: 180 },
-  { x: 'Jueves', y: 210 },
-  { x: 'Viernes', y: 190 },
-  { x: 'Sábado', y: 160 },
-  { x: 'Domingo', y: 140 }
+const concurrentUsersSeries = ref([
+  {
+    name: 'Usuarios concurrentes',
+    data: [
+      { x: 'Lunes', y: 150 },
+      { x: 'Martes', y: 230 },
+      { x: 'Miércoles', y: 180 },
+      { x: 'Jueves', y: 210 },
+      { x: 'Viernes', y: 190 },
+      { x: 'Sábado', y: 160 },
+      { x: 'Domingo', y: 140 }
+    ]
+  }
 ]);
 
 const errorTypesSeries = ref([
